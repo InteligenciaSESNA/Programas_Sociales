@@ -1,0 +1,219 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+      width: 1250px;
+      height: 360px;
+    }
+    </style>
+    
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    
+    <!-- Chart code -->
+    <script>
+    am5.ready(function() {
+    
+    // Create root element
+    var root = am5.Root.new("chartdiv");
+    // elimina el logo inferios
+    root._logo.dispose(); 
+    
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+    
+    
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: true,
+      panY: true,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      pinchZoomX: true
+    }));
+    
+    // Add cursor
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+    cursor.lineY.set("visible", false);
+    
+    
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var xRenderer = am5xy.AxisRendererX.new(root, { minGridDistance: 30 });
+    xRenderer.labels.template.setAll({
+      rotation: -60,
+      centerY: am5.p50,
+      centerX: am5.p50,
+      paddingRight: 0
+    });
+    
+    xRenderer.grid.template.setAll({
+      location: 1
+    })
+    
+	
+    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+      maxDeviation: 0.3,
+      categoryField: "country",
+      renderer: xRenderer,
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+
+    // Ajuste de etiquetas del eje X
+    xAxis.get("renderer").labels.template.setAll({
+  	oversizedBehavior: "truncate",
+ 	maxWidth: 90,
+        ellipsis: "..."
+    });
+
+	
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      maxDeviation: 0.3,
+      renderer: am5xy.AxisRendererY.new(root, {
+        strokeOpacity: 0.1
+      })
+    }));
+    
+    
+    // Create series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+      name: "Series 1",
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: "value",
+      fill: am5.color('#4e203a'),  // colorbar
+      stroke: am5.color('#4e203a'), // colorbar
+      sequencedInterpolation: true,
+      categoryXField: "country",
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "{valueY}"
+      })
+    }));
+    
+    // radio de borde de cada barra
+    series.columns.template.setAll({ cornerRadiusTL: 1, cornerRadiusTR: 1, strokeOpacity: 0 });
+    // separación de entre barras
+    series.columns.template.setAll({
+  	width: am5.percent(96) 
+    });
+
+    // hover states
+    series.columns.template.set("interactive", true);
+
+    series.columns.template.states.create("hover", {
+      fill: am5.color("#2a3240"),
+      stroke: am5.color("#2a3240")
+    });
+    
+    // Set data
+    
+    var data = [
+{
+ country:"Chiapas",
+value:1259560015.6
+},{
+ country:"Jalisco",
+value:1014602911.6
+},{
+ country:"Guerrero",
+value:421483425.98
+},{
+ country:"Sinaloa",
+value:283096433.91
+},{
+ country:"México",
+value:159180262.47
+},{
+ country:"Puebla",
+value:109852742.35
+},{
+ country:"Sin dato",
+value:104843248.89
+},{
+ country:"Tlaxcala",
+value:100383844.1
+},{
+ country:"Durango",
+value:95517097.03
+},{
+ country:"Chihuahua",
+value:91256271.17
+},{
+ country:"Nayarit",
+value:90115243.69
+},{
+ country:"Guanajuato",
+value:72347635.99
+},{
+ country:"Oaxaca",
+value:48672588.95
+},{
+ country:"Campeche",
+value:43963095.85
+},{
+ country:"Querétaro",
+value:42647784.23
+},{
+ country:"Veracruz de Ignacio de la Llave",
+value:42541505.2
+},{
+ country:"Michoacán de Ocampo",
+value:42094360.05
+},{
+ country:"Hidalgo",
+value:35786763.05
+},{
+ country:"Sonora",
+value:27273723.5
+},{
+ country:"Morelos",
+value:27201578.71
+},{
+ country:"Tamaulipas",
+value:20638496.21
+},{
+ country:"Zacatecas",
+value:14055255.05
+},{
+ country:"Aguascalientes",
+value:5563169.23
+},{
+ country:"San Luis Potosí",
+value:5257765.35
+},{
+ country:"Yucatán",
+value:1175845.87
+},{
+ country:"Tabasco",
+value:1047835.66
+},{
+ country:"Quintana Roo",
+value:351173.18
+},{
+ country:"Coahuila de Zaragoza",
+value:66108.78
+},{
+ country:"Nuevo León",
+value:2234.07
+}];
+    xAxis.data.setAll(data);
+    series.data.setAll(data);
+    
+    
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    series.appear(1000);
+    chart.appear(1000, 100);
+    
+    }); // end am5.ready()
+    </script>
+    
+    <!-- HTML -->
+    <div id="chartdiv"></div> 

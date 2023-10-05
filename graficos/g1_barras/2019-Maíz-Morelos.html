@@ -1,0 +1,153 @@
+<!-- Styles -->
+<style>
+    #chartdiv {
+      width: 1250px;
+      height: 330px;
+    }
+    </style>
+    
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    
+    <!-- Chart code -->
+    <script>
+    am5.ready(function() {
+    
+    // Create root element
+    var root = am5.Root.new("chartdiv");
+    // elimina el logo inferios
+    root._logo.dispose(); 
+    
+    // Set themes
+    // https://www.amcharts.com/docs/v5/concepts/themes/
+    root.setThemes([
+      am5themes_Animated.new(root)
+    ]);
+    
+    
+    // Create chart
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      panX: true,
+      panY: true,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      pinchZoomX: true
+    }));
+    
+    // Add cursor
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+    cursor.lineY.set("visible", false);
+    
+    
+    // Create axes
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+    var xRenderer = am5xy.AxisRendererX.new(root, { minGridDistance: 30 });
+    xRenderer.labels.template.setAll({
+      rotation: 0,
+      centerY: am5.p50,
+      centerX: am5.p50,
+      paddingRight: 0
+    });
+    
+    xRenderer.grid.template.setAll({
+      location: 1
+    })
+    
+	
+    var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+      maxDeviation: 0.3,
+      categoryField: "country",
+      renderer: xRenderer,
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+
+    // Ajuste de etiquetas del eje X
+    xAxis.get("renderer").labels.template.setAll({
+  	oversizedBehavior: "truncate",
+ 	maxWidth: 90,
+        ellipsis: "..."
+    });
+
+	
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      maxDeviation: 0.3,
+      renderer: am5xy.AxisRendererY.new(root, {
+        strokeOpacity: 0.1
+      })
+    }));
+    
+    
+    // Create series
+    // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+    var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+      name: "Series 1",
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: "value",
+      fill: am5.color('#4e203a'),  // colorbar
+      stroke: am5.color('#4e203a'), // colorbar
+      sequencedInterpolation: true,
+      categoryXField: "country",
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "{valueY}"
+      })
+    }));
+    
+    // radio de borde de cada barra
+    series.columns.template.setAll({ cornerRadiusTL: 1, cornerRadiusTR: 1, strokeOpacity: 0 });
+    // separación de entre barras
+    series.columns.template.setAll({
+  	width: am5.percent(96) 
+    });
+    
+    // hover states
+    series.columns.template.set("interactive", true);
+
+    series.columns.template.states.create("hover", {
+      fill: am5.color("#2a3240"),
+      stroke: am5.color("#2a3240")
+    });
+    
+    // Set data
+    
+    var data = [
+{
+ country:"Jojutla",
+value:3941335.2
+},{
+ country:"Jonacatepec de Leandro Valle",
+value:2228104.21
+},{
+ country:"Axochiapan",
+value:1674868.78
+},{
+ country:"Tlayacapan",
+value:935892.09
+},{
+ country:"Ocuituco",
+value:446817.19
+},{
+ country:"Puente de Ixtla",
+value:108267.68
+},{
+ country:"Mazatepec",
+value:11097.8
+}];
+    xAxis.data.setAll(data);
+    series.data.setAll(data);
+    
+    
+    // Make stuff animate on load
+    // https://www.amcharts.com/docs/v5/concepts/animations/
+    series.appear(1000);
+    chart.appear(1000, 100);
+    
+    }); // end am5.ready()
+    </script>
+    
+    <!-- HTML -->
+    <div id="chartdiv"></div> 
