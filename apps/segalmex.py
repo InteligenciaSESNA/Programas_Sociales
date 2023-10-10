@@ -1553,16 +1553,16 @@ def summary_reglas_operacion(clicks, producto_sel, anio_sel):
 
 
 #########      CALL : Pie Plot  ################
-@app.callback(# 'click_feature
-        Output('pie-plot1', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        State('producto', 'value'),
-        State('anio', 'value'),
-        prevent_initial_call=True
-    )
-def pie_plo1(clicks, sel_producto, sel_anio):
-    #time.sleep(1)
-    return open(root + f"./graficos/piePlot_{str(2020)}.html", 'r', encoding = 'utf-8').read()
+# @app.callback(# 'click_feature
+#         Output('pie-plot1', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State('producto', 'value'),
+#         State('anio', 'value'),
+#         prevent_initial_call=True
+#     )
+# def pie_plo1(clicks, sel_producto, sel_anio):
+#     #time.sleep(1)
+#     return open(root + f"./graficos/piePlot_{str(2020)}.html", 'r', encoding = 'utf-8').read()
 
 # @app.callback(Output("loading-output-1", "children"),
 #           Input("loading-input-1", "value"))
@@ -2295,39 +2295,7 @@ def info_hover(feature):
     return get_info(feature)
 
 
- # Base
-base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
-                options=dict(style=style_handle),  # how to style each polygon
-                zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                # color : color del perimetro del hover
-                # dashArray : tipo de linea 
-                # #154360
-                hideout=dict(click_feature=None, colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-                id='states')
-
-# volumen producción
-def volumenProduccion_choice(producto, anio):
-    anio_sel = anio
-    producto_sel = producto
-    # condition for year
-    if int(anio_sel) == 2019 and producto_sel == 'Leche':
-        colorprop = 1
-        estilo = style2
-    else:
-        colorprop = f'{anio_sel}-{producto_sel}'
-        estilo = style
-    # layer
-    volumen_produccion = dl.GeoJSON(data=data2,  # url to geojson file
-                                options=dict(style=style_handle),  # how to style each polygon
-                                zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                                zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                                hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
-                                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
-                                id='states')
-
-    return volumen_produccion
+ 
 #  Btn regrasa a Nacional
 # @app.callback(Output('submit-button', 'n_clicks'),
 #               Input("btn_nacional", "n_click"))
@@ -2609,16 +2577,15 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="upper")
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], style={"z-index": 1000})
         else:
             benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=(radio), color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="upper")
-
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], style={"z-index": 1001})
         return benef_option
-
+    
     # capa de beneficiarios
     beneficiarios = benef_choice(benef_sel)
 
@@ -2626,15 +2593,47 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     centros = dl.Pane([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[12, 16]), children=[
                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
                                     dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
-                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])], name="upper")
+                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])], style={"z-index": 1002})
 
     # Productores
     productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
         dl.Tooltip(f"Productores: {mun}-{ent}"),
         dl.Popup(productores_popup(ent, mun,gmargina,numprod))
-        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])], name="upper")
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])], style={"z-index": 1003})
 
-    
+    # Base
+    base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
+                    options=dict(style=style_handle),  # how to style each polygon
+                    zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                    zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                    # color : color del perimetro del hover
+                    # dashArray : tipo de linea 
+                    # #154360
+                    hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
+                    hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
+                    id='states')
+
+    # volumen producción
+    def volumenProduccion_choice(producto, anio):
+        anio_sel = anio
+        producto_sel = producto
+        # condition for year
+        if int(anio_sel) == 2019 and producto_sel == 'Leche':
+            colorprop = 1
+            estilo = style2
+        else:
+            colorprop = f'{anio_sel}-{producto_sel}'
+            estilo = style
+        # layer
+        volumen_produccion = dl.GeoJSON(data=data2,  # url to geojson file
+                                    options=dict(style=style_handle),  # how to style each polygon
+                                    zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                                    zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                                    hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
+                                    hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
+                                    id='states')
+
+        return volumen_produccion
     # volumen producción
     volumen_produccion = volumenProduccion_choice(producto_sel, anio_sel)
 
@@ -2700,7 +2699,7 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
 #         return n
     
     
-    
+  
 
 
 ######### Mapa criterios simulados   ################
@@ -2766,29 +2765,29 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
     
     # capa base
     capa_base = dl.GeoJSON(data=data2,  # url to geojson file
-                                    options=dict(style=style_handle),  # how to style each polygon
-                                    zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                                    zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                                    hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
-                                    hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
-                                    id='states')
+                            options=dict(style=style_handle),  # how to style each polygon
+                            zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                            zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                            hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
+                            hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
+                            id='states')   
     # ópción para agregar beneficarios observados
     benef_filter = benef_filter[~benef_filter['LAT_DECIMALmean'].isna()]
     beneficiarios = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio,dashArray=1, fillOpacity=0, color='#1a5276', children=[
                 dl.Popup("Municipio: {}".format(mun))
-                ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])])
+                ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])], name="benef3")
     
     # opción para agregar criterio del precio y marginación 
     if criterios_sel == 'Marginación':
         productores_filter = productores_filter[~productores_filter['Escenario1'].isna()]
         productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
             dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])])
+            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])], name="prod2")
     else:
         productores_filter = productores_filter[~productores_filter['Escenario2'].isna()]
         productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
             dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])])
+            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])], name="prod3")
 
   
 
@@ -3085,26 +3084,26 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
 #     return html.P("This shouldn't ever be displayed...")
 
 #########  CALL : Actualiza gráfico cantidad/Monto productores  ################
-@app.callback(
-        Output('plot-r3c1', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        State("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
+# @app.callback(
+#         Output('plot-r3c1', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
 
-def actualizar_plot_r3c1(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+# def actualizar_plot_r3c1(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
 
-    if feature == None:
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+#     if feature == None:
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
 
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
 
 #----------------------------------------------------------------------------------
 #                     Actializa Gráfico 3:
@@ -3129,28 +3128,28 @@ def actualizar_plot_r3c1(clicks, feature, producto_sel, anio_sel):
 #         return tab2_r2c2_content
 #     return html.P("This shouldn't ever be displayed...")
 
-# --------------------------------------------
-@app.callback(
-        Output('plot-r3c2', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
+# # --------------------------------------------
+# @app.callback(
+#         Output('plot-r3c2', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
 
-def actualizar_plot_r3c2(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+# def actualizar_plot_r3c2(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
 
 
-    if feature == None:
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+#     if feature == None:
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
 
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
 
 
 
@@ -3172,122 +3171,122 @@ def actualizar_plot_r3c2(clicks, feature, producto_sel, anio_sel):
 #--------------------------------------------------------------------------------------
 #  Actualización Tab 1 : row3-col1 Grafico qqplot
 #--------------------------------------------------------------------------------------
-@app.callback(
-        Output('plot-r1', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
+# @app.callback(
+#         Output('plot-r1', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
 
-def actualizar_plot_r1(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-    if feature == None:
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
-
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+# def actualizar_plot_r1(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
 
 
-@app.callback(
-        Output('plot-r2', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
+#     if feature == None:
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
 
-def actualizar_plot_r2(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
 
 
-    if feature == None:
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+# @app.callback(
+#         Output('plot-r2', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
 
-        return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-@app.callback(
-        Output('plot-r3', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
-
-def actualizar_plot_r3(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+# def actualizar_plot_r2(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
 
 
-    if feature == None:
-        return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+#     if feature == None:
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
 
-        return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-@app.callback(
-        Output('plot-r4', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
-
-def actualizar_plot_r4(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
 
 
-    if feature == None:
-        return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+# @app.callback(
+#         Output('plot-r3', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
 
-        return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+# def actualizar_plot_r3(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
 
-@app.callback(
-        Output('plot-r5', 'srcDoc'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
 
-def actualizar_plot_r5(clicks, feature, producto_sel, anio_sel):
-    # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-    # dist_plot = base[base['Anio'] == int(anio_sel)]
-    # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+#     if feature == None:
+#         return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
 
-    if feature == None:
-        return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-    else:
-        entidad = feature["properties"]["name"]
+#         return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
 
-        return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
-        #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+
+# @app.callback(
+#         Output('plot-r4', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
+
+# def actualizar_plot_r4(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+
+
+#     if feature == None:
+#         return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
+
+#         return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+
+# @app.callback(
+#         Output('plot-r5', 'srcDoc'),
+#         Input('submit-button', 'n_clicks'),
+#         State("states", "click_feature"),
+#         State('producto', 'value'),
+#         State('anio', 'value')
+#     )
+
+# def actualizar_plot_r5(clicks, feature, producto_sel, anio_sel):
+#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
+#     # dist_plot = base[base['Anio'] == int(anio_sel)]
+#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
+
+#     if feature == None:
+#         return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
+#     else:
+#         entidad = feature["properties"]["name"]
+
+#         return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
+#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
 
 
 
