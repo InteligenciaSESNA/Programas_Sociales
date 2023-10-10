@@ -127,8 +127,6 @@ base_productores = pd.read_excel(root + '/datasets/TotalProductores2.xlsx')
 # base resumen introduccion
 base_resumen = pd.read_excel(root + '/datasets/resumen_montos.xlsx')
 
-
-
 # sample maps P
 # blue style
 style = "https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png"
@@ -2586,13 +2584,13 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])])
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="upper")
         else:
             benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=(radio), color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])])
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="upper")
 
         return benef_option
 
@@ -2603,13 +2601,13 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     centros = dl.Pane([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[12, 16]), children=[
                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
                                     dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
-                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])])
+                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])], name="upper")
 
     # Productores
     productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
         dl.Tooltip(f"Productores: {mun}-{ent}"),
         dl.Popup(productores_popup(ent, mun,gmargina,numprod))
-        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])])
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])], name="upper")
 
     # volumen producción
     def volumenProduccion_choice(producto, anio):
