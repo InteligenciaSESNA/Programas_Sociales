@@ -145,9 +145,9 @@ def display_page(pathname):
         #return home.layout
         return segalmex.layout
 
-#HOST = '10.14.10.145'
-#PORT = 8000
+HOST = '0.0.0.0'
+PORT = 8050
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
-    #app.run_server(debug=False, host= HOST, port=PORT)
+    #app.run_server(debug=False)
+    app.run_server(debug=False, host= HOST, port=PORT)
