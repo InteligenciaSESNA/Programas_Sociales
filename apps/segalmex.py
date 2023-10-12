@@ -165,10 +165,11 @@ list_capas_marginacion = initial_values = [
         {"value": "Centros de Acopio", "label": "Centros de Acopio", "group": "Capa"},
         {"value": "Productores", "label": "Productores", "group": "Capa"},
         {"value": "Volumen Producción", "label": "Volumen Producción", "group": "Capa"},
-        # Grado de marginación
+        
     ],
     [
         {"value": "Beneficiarios", "label": "Beneficiarios", "group": "Capa"},
+        # Grado de marginación
         {"value": "Muy bajo", "label": "Muy bajo", "group": "Grado Marginación"},
         {"value": "Bajo", "label": "Bajo", "group": "Grado Marginación"},
         {"value": "Medio", "label": "Medio", "group": "Grado Marginación"},
@@ -178,8 +179,116 @@ list_capas_marginacion = initial_values = [
     ],
 ]
 
-
 list_criterios = ['Marginación', 'Precio']
+
+####  Propiedades del MAPA
+classes = [0, 1000,3000,5000,10000, 100000, 1000000, 3000000] #   #FF7F50
+colorscale = ['#ffffe5','#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#005a32'] # '#0B5345'
+# fillcolor : color de relleno de cada estado  
+style2 = dict(weight=1, opacity=0.9, fillColor='#D4E6F1', color='white', dashArray='1', fillOpacity=0.9)
+# fillOpacity : transparencia de color de relleno
+style = dict(weight=1, opacity=0.9, fillColor='#f5cba7', color='white', dashArray='1', fillOpacity=0.9)
+# estilo centros de acopio
+#  color: color de fondo
+style0 = dict(weight=1, opacity=0.9 ,color='#EBF5FB', dashArray='1', fillOpacity=0.9)
+# Create colorbar.
+ctg = ["{}+".format(millify(cls), classes[i + 1]) for i, cls in enumerate(classes[:-1])] + ["{}+".format(millify(classes[-1]))]
+colorbar = dlx.categorical_colorbar(categories=ctg, colorscale=colorscale, width=300, height=30, position="bottomleft", unit='/Ton')
+# Geojson rendering logic, must be JavaScript as it is executed in clientside
+style_handle = assign("""function(feature, context){
+    const {classes, colorscale, style, colorProp} = context.props.hideout;  // get props from hideout
+    const value = feature.properties[colorProp];  // get value the determines the color
+    
+    for (let i = 0; i < classes.length; ++i) {
+        if (value > classes[i]) {
+            style.fillColor = colorscale[i];  // set the fill color according to the class
+        }
+    }
+    return style;
+}""")
+
+# change color to click on state
+
+# style_handle2 = assign("""function(feature, context){
+#     const match = context.props.hideout &&  context.props.hideout.properties.name === feature.properties.name;
+#     if(match) return {weight:1, fillColor:'#4e203a', color:'white', opacity:0.9 fillOpacity=0.9, dashArray:'1'};
+# }""")
+
+# app.clientside_callback("function(feature){return feature}", 
+#                         Output("states", "hideout"), 
+#                         [Input("states", "click_feature")])
+
+# Information
+info = html.Div(children=get_info(), id="info", className="info",
+                style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
+
+#info2 = html.Div(children=get_info2(), id="info2", className="info2",
+#                style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
+
+# muestra la simbología de grados de marginación 
+info_grado_marginacion = html.Div([
+    dbc.Row(dmc.Text("Grado de marginación:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
+    dbc.Row([
+        dbc.Col(dmc.Text([DashIconify(icon="bi:circle-fill", width=18, color='#084594', height=18), " Muy alto  ", " ",
+                          DashIconify(icon="bi:circle-fill", width=18, color='#2171b5', height=18), " Alto  ", " ",
+                          DashIconify(icon="bi:circle-fill", width=18, color='#4292c6', height=18), " Medio  ", " ",
+                          DashIconify(icon="bi:circle-fill", width=18, color='#6baed6', height=18), " Bajo  ", " ",
+                          DashIconify(icon="bi:circle-fill", width=18, color='#9ecae1', height=18), " Muy bajo  "], size=10, )),
+       ], style={'marginBottom':'6px'}),
+    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
+], style={'opacity':'0.9', "position": "absolute", "bottom": "88px", "left": "10px", "z-index": "2000"})
+
+info_num_benef = html.Div([
+    dbc.Row(dmc.Text("Núm. Beneficiarios/Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
+    dbc.Row([
+        dbc.Col(dmc.Text(["Menor ", 
+                          DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
+                          DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
+                          DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
+                          DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
+                          DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
+                          DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
+                          DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
+                          DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
+       ], style={'marginBottom':'6px'}),
+    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
+], style={'opacity':'0.9', "position": "absolute", "bottom": "140px", "left": "10px", "z-index": "2000"})
+
+
+# título del volumen de producción
+info_vol_prod = html.Div([
+    dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=12, color='#4e203a', style={'marginTop':'3px'})),
+], style={'opacity':'0.9', "position": "absolute", "bottom": "63px", "left": "10px", "z-index": "2000"})
+
+
+# descripción de escenarios 
+info_escenarios_marginacion = html.Div([
+    dbc.Row(dmc.Text("Beneficiarios:",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
+    dbc.Row([
+        dbc.Col(dmc.Text([DashIconify(icon="akar-icons:circle", width=18, color='#1a5276', height=18), "Observados", " ",
+                          DashIconify(icon="akar-icons:circle", width=18, color='#ee2a16', height=18), "Hipotéticos", " "], size=10)),
+       ], style={'marginBottom':'6px', 'paddingBottom':'1rem'}),
+    dbc.Row(dmc.Text("Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
+    dbc.Row([
+        dbc.Col(dmc.Text(["Menor ", 
+                          DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
+                          DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
+                          DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
+                          DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
+                          DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
+                          DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
+                          DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
+                          DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
+       ], style={'marginBottom':'6px'}),
+    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
+], style={'opacity':'0.9', "position": "absolute", "bottom": "20px", "left": "10px", "z-index": "2000"})
+
+# información sobre los productores
+info_productores = html.Div([
+    dbc.Row(dmc.Text("(*) Productores se encuentran en escala logarítmica",weight=600, size=10, color='#4e203a', style={'marginTop':'3px'})),
+], style={'opacity':'0.9', "position": "absolute", "bottom": "18px", "right": "50px", "z-index": "2000"})
+
+
 
 ######################################################################
 ####                 Header
@@ -1623,7 +1732,7 @@ def resumen_centros_acopio(clicks, feature, transfer_sel, sel_producto, sel_anio
     
     
     
-    #########   CALL : Imagen Población beneficiaria / Monto Apoyo  ################
+#########   CALL : Imagen Población beneficiaria / Monto Apoyo  ################
 @app.callback(# 'click_feature
         Output('image-poblacion_beneficiaria', 'src'),
         Input('beneficiarios-opciones', 'value'),
@@ -2156,111 +2265,6 @@ def switch_tab(active):
 
 #########  CALL : Regresa actualización del MAPA  ################
 # declaración de parámetros para color y leyendas
-classes = [0, 1000,3000,5000,10000, 100000, 1000000, 3000000] #   #FF7F50
-colorscale = ['#ffffe5','#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#005a32'] # '#0B5345'
-# fillcolor : color de relleno de cada estado  
-style2 = dict(weight=1, opacity=0.9, fillColor='#eaf2f8', color='white', dashArray='1', fillOpacity=0.9)
-# fillOpacity : transparencia de color de relleno
-style = dict(weight=1, opacity=0.9, fillColor='#eaf2f8', color='white', dashArray='1', fillOpacity=0.9)
-# estilo centros de acopio
-#  color: color de fondo
-style0 = dict(weight=1, opacity=0.9 ,color='#EBF5FB', dashArray='1', fillOpacity=0.9)
-# Create colorbar.
-ctg = ["{}+".format(millify(cls), classes[i + 1]) for i, cls in enumerate(classes[:-1])] + ["{}+".format(millify(classes[-1]))]
-colorbar = dlx.categorical_colorbar(categories=ctg, colorscale=colorscale, width=300, height=30, position="bottomleft", unit='/Ton')
-# Geojson rendering logic, must be JavaScript as it is executed in clientside
-style_handle = assign("""function(feature, context){
-    const {classes, colorscale, style, colorProp} = context.props.hideout;  // get props from hideout
-    const value = feature.properties[colorProp];  // get value the determines the color
-    
-    for (let i = 0; i < classes.length; ++i) {
-        if (value > classes[i]) {
-            style.fillColor = colorscale[i];  // set the fill color according to the class
-        }
-    }
-    return style;
-}""")
-
-# change color to click on state
-
-# style_handle2 = assign("""function(feature, context){
-#     const match = context.props.hideout &&  context.props.hideout.properties.name === feature.properties.name;
-#     if(match) return {weight:1, fillColor:'#4e203a', color:'white', opacity:0.9 fillOpacity=0.9, dashArray:'1'};
-# }""")
-
-# app.clientside_callback("function(feature){return feature}", 
-#                         Output("states", "hideout"), 
-#                         [Input("states", "click_feature")])
-
-# Information
-info = html.Div(children=get_info(), id="info", className="info",
-                style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
-
-#info2 = html.Div(children=get_info2(), id="info2", className="info2",
-#                style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
-
-# muestra la simbología de grados de marginación 
-info_grado_marginacion = html.Div([
-    dbc.Row(dmc.Text("Grado de marginación:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-    dbc.Row([
-        dbc.Col(dmc.Text([DashIconify(icon="bi:circle-fill", width=18, color='#084594', height=18), " Muy alto  ", " ",
-                          DashIconify(icon="bi:circle-fill", width=18, color='#2171b5', height=18), " Alto  ", " ",
-                          DashIconify(icon="bi:circle-fill", width=18, color='#4292c6', height=18), " Medio  ", " ",
-                          DashIconify(icon="bi:circle-fill", width=18, color='#6baed6', height=18), " Bajo  ", " ",
-                          DashIconify(icon="bi:circle-fill", width=18, color='#9ecae1', height=18), " Muy bajo  "], size=10, )),
-       ], style={'marginBottom':'6px'}),
-    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-], style={'opacity':'0.9', "position": "absolute", "bottom": "88px", "left": "10px", "z-index": "2000"})
-
-info_num_benef = html.Div([
-    dbc.Row(dmc.Text("Núm. Beneficiarios/Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-    dbc.Row([
-        dbc.Col(dmc.Text(["Menor ", 
-                          DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
-                          DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
-                          DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
-                          DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
-                          DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
-                          DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
-                          DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
-                          DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
-       ], style={'marginBottom':'6px'}),
-    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-], style={'opacity':'0.9', "position": "absolute", "bottom": "140px", "left": "10px", "z-index": "2000"})
-
-
-# título del volumen de producción
-info_vol_prod = html.Div([
-    dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=12, color='#4e203a', style={'marginTop':'3px'})),
-], style={'opacity':'0.9', "position": "absolute", "bottom": "63px", "left": "10px", "z-index": "2000"})
-
-
-# descripción de escenarios 
-info_escenarios_marginacion = html.Div([
-    dbc.Row(dmc.Text("Beneficiarios:",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-    dbc.Row([
-        dbc.Col(dmc.Text([DashIconify(icon="akar-icons:circle", width=18, color='#1a5276', height=18), "Observados", " ",
-                          DashIconify(icon="akar-icons:circle", width=18, color='#ee2a16', height=18), "Hipotéticos", " "], size=10)),
-       ], style={'marginBottom':'6px', 'paddingBottom':'1rem'}),
-    dbc.Row(dmc.Text("Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-    dbc.Row([
-        dbc.Col(dmc.Text(["Menor ", 
-                          DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
-                          DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
-                          DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
-                          DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
-                          DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
-                          DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
-                          DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
-                          DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
-       ], style={'marginBottom':'6px'}),
-    #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-], style={'opacity':'0.9', "position": "absolute", "bottom": "20px", "left": "10px", "z-index": "2000"})
-
-# información sobre los productores
-info_productores = html.Div([
-    dbc.Row(dmc.Text("(*) Productores se encuentran en escala logarítmica",weight=600, size=10, color='#4e203a', style={'marginTop':'3px'})),
-], style={'opacity':'0.9', "position": "absolute", "bottom": "18px", "right": "50px", "z-index": "2000"})
 
 
 ####   actualiza tabla-Mapa
@@ -2307,8 +2311,50 @@ def info_hover(feature):
 #                     id='states')
 
 # contenido mapas
-content_mapa1 = html.Div(dl.Map(id="mapa1"))
-content_mapa2 = html.Div(dl.Map(id="mapa2"))
+# Base
+base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
+                options=dict(style=style_handle),  # how to style each polygon
+                zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                # color : color del perimetro del hover
+                # dashArray : tipo de linea 
+                # #154360
+                hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
+                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
+                id='states')
+
+# volumen producción
+def volumenProduccion_choice(producto, anio):
+    anio_sel = anio
+    producto_sel = producto
+    # condition for year
+    if int(anio_sel) == 2019 and producto_sel == 'Leche':
+        colorprop = 1
+        estilo = style2
+    else:
+        colorprop = f'{anio_sel}-{producto_sel}'
+        estilo = style
+    # layer
+    volumen_produccion = dl.GeoJSON(data=data2,  # url to geojson file
+                                options=dict(style=style_handle),  # how to style each polygon
+                                zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                                zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                                hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
+                                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
+                                id='states')
+
+    return volumen_produccion
+
+# Contenido por mapa
+content_mapa1 = html.Div(id="mapa1")
+
+# content_mapa1 = html.Div([
+#         dl.Map(center=[22.76, -102.58], zoom=5, children=[base_mapa1, info]
+#            , id="mapa1", style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
+#         #html.Div(id="state"), html.Div(id="info2")
+#     ])
+
+content_mapa2 = html.Div(id="mapa2")
 
 
  
@@ -2516,7 +2562,8 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     #             #html.Div(id="state"), html.Div(id="info2")
     #         ])
 
-   
+    
+
     
     # Beneficiarios 
     def beneficiarios_popup(ent, mun, gmargina, numbenef, monto):
@@ -2588,18 +2635,19 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     
     # opción de beneficiarios
     def benef_choice(benef_sel):
-        if benef_sel=='Número de Beneficiarios':
+        #benef_filter = base
+        if benef_sel == 'Número de Beneficiarios':
             benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=(radio),fillOpacity=1,fillColor=color, color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="panel1", style={"z-index": 1000})
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])])
         else:
             benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=(radio), color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])], name="panel2", style={"z-index": 1001})
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])])
         return benef_option
     
     # capa de beneficiarios
@@ -2609,47 +2657,27 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     centros = dl.Pane([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[12, 16]), children=[
                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
                                     dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
-                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])], name="panel3", style={"z-index": 1002})
+                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])])
 
     # Productores
     productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
         dl.Tooltip(f"Productores: {mun}-{ent}"),
         dl.Popup(productores_popup(ent, mun,gmargina,numprod))
-        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])],  name="panel4", style={"z-index": 1003})
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])])
 
-    # Base
-    base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
-                    options=dict(style=style_handle),  # how to style each polygon
-                    zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                    zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                    # color : color del perimetro del hover
-                    # dashArray : tipo de linea 
-                    # #154360
-                    hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-                    hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-                    id='states')
+    # # Base
+    # base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
+    #                 options=dict(style=style_handle),  # how to style each polygon
+    #                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+    #                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+    #                 # color : color del perimetro del hover
+    #                 # dashArray : tipo de linea 
+    #                 # #154360
+    #                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
+    #                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
+    #                 id='states')
     
-    # volumen producción
-    def volumenProduccion_choice(producto, anio):
-        anio_sel = anio
-        producto_sel = producto
-        # condition for year
-        if int(anio_sel) == 2019 and producto_sel == 'Leche':
-            colorprop = 1
-            estilo = style2
-        else:
-            colorprop = f'{anio_sel}-{producto_sel}'
-            estilo = style
-        # layer
-        volumen_produccion = dl.GeoJSON(data=data2,  # url to geojson file
-                                    options=dict(style=style_handle),  # how to style each polygon
-                                    zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                                    zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                                    hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
-                                    hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
-                                    id='states')
-
-        return volumen_produccion
+    
 
     # volumen producción
     volumen_produccion = volumenProduccion_choice(producto_sel, anio_sel)
@@ -2664,11 +2692,11 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     }
 
     # class MAP
-    class Map():
+    class Capas():
         # constructor
         def __init__(self, background_style=bstyle):
             self.base_layer = [#dl.TileLayer(url=background_style),
-                                dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
+                                #dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
                                 #html.Button("Zoom in", id="zoom_in"),
                                 info,
                                 base]
@@ -2693,12 +2721,13 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
                 #     self.base_layer.append(info_grado_marginacion)
             
             return self.base_layer
+        
     # background style del mapa
-    children_layer = Map().add(capas_sel)
+    children_layer = Capas().add(capas_sel)
     # dl.LayersControl([dmc.Text('Muy Bajo')])
     tab2_mapa_content = html.Div([
         dl.Map(center=[22.76, -102.58], zoom=5, children=children_layer
-           , style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
+           , style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
         #html.Div(id="state"), html.Div(id="info2")
     ])
         
@@ -2714,6 +2743,15 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     
 #     if(len(m)>0):
 #         return n
+
+ # capa base
+capa_base = dl.GeoJSON(data=data2,  # url to geojson file
+                        options=dict(style=style_handle),  # how to style each polygon
+                        zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                        zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                        hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
+                        hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
+                        id='states2')   
     
     
   
@@ -2780,31 +2818,24 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
     #         dl.Popup("Municipio: {}".format(mun))
     #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'])])
     
-    # capa base
-    capa_base = dl.GeoJSON(data=data2,  # url to geojson file
-                            options=dict(style=style_handle),  # how to style each polygon
-                            zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-                            zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-                            hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
-                            hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
-                            id='states')  
+   
     # ópción para agregar beneficarios observados
     benef_filter = benef_filter[~benef_filter['LAT_DECIMALmean'].isna()]
     beneficiarios = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio,dashArray=1, fillOpacity=0, color='#1a5276', children=[
                 dl.Popup("Municipio: {}".format(mun))
-                ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])], name="prod1")
+                ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])])
     
     # opción para agregar criterio del precio y marginación 
     if criterios_sel == 'Marginación':
         productores_filter = productores_filter[~productores_filter['Escenario1'].isna()]
         productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
             dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])], name="prod2")
+            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])])
     else:
         productores_filter = productores_filter[~productores_filter['Escenario2'].isna()]
         productores = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
             dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])], name="prod3")
+            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])])
 
     if len(benef_sel) > 0:
         capas = [info_escenarios_marginacion,
@@ -2812,7 +2843,7 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
                  capa_base,
                  beneficiarios,
                  productores]   
-    else:
+    else:   
         capas = [info_escenarios_marginacion,
                  info,
                  capa_base,
@@ -2822,7 +2853,7 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
     tab2_mapa_content = html.Div([
         dl.Map(center=[22.76, -102.58], zoom=5,
                children=capas
-               ,style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
+               ,style={'width': '100%', 'backgroundColor':'white', 'height': '100vh', 'margin': "auto", "display": "block"}),
             #html.Div(id="state"), html.Div(id="info2")
         ])
     
