@@ -101,10 +101,11 @@ root = "C:/Users/jcmartinez/Desktop/Dashboard3"
 #repo_est_url = ""
 #estados_json = open(root + '/datasets/estadosMexico.json')
 #mx_est_geo = json.load(estados_json)
-
-json.load(open(root +'/datasets/sample.json'))
+json.load(open(root +'/datasets/sample3.json'))
 data2 = json.load(open(root +'/datasets/sample3.json'))
-
+# with open (root +'/datasets/sample3.json') as f:
+#   data2 = json.loads(f)
+# data2 = json.dumps(data2)
 # base completa
 # base_2019 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2019.xlsx')
 # base_2020 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2020.xlsx')
@@ -2143,19 +2144,19 @@ tab2_capas_criterios = html.Div([
         dmc.SimpleGrid(cols=2, children=[
             # selector criterios simulados
             # chipgroup
-            dmc.ChipGroup([
-                    dmc.Chip(
-                        x,
-                        value=x,
-                        variant="outline",
-                    )
-                    for x in ["Observado"]
-                ],
-                align='center',
-                id="chip-observado",
-                value=[],
-                multiple=True,
-            ),
+            # dmc.ChipGroup([
+            #         dmc.Chip(
+            #             x,
+            #             value=x,
+            #             variant="outline",
+            #         )
+            #         for x in ["Beneficiarios"]
+            #     ],
+            #     align='center',
+            #     id="chip-beneficiarios",
+            #     value=[],
+            #     multiple=True,
+            # ),
             # selector adicional
             # dmc.Select(
             #     label='Otro selector',
@@ -2312,7 +2313,7 @@ def info_hover(feature):
 
 # contenido mapas
 # Base
-base = dl.Overlay(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283747
+base = dl.BaseLayer(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283747
                 options=dict(style=style_handle),  # how to style each polygon
                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
@@ -2321,7 +2322,7 @@ base = dl.Overlay(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #
                 # #154360
                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-                id='states')), name='base', checked=True)
+                id='states')), name='Base', checked=True)
 
 # volumen producción
 def volumenProduccion_choice(producto, anio):
@@ -2385,7 +2386,8 @@ content_mapa2 = html.Div(id="mapa2")
         #prevent_initial_call=True,
     )
 
-# def actualizar_mapa2(clicks, margin_sel, benef_sel,capas_sel, transfer_sel, producto_sel, anio_sel):
+# def actualizar_
+# (clicks, margin_sel, benef_sel,capas_sel, transfer_sel, producto_sel, anio_sel):
 def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
 
     # capas
@@ -2407,7 +2409,8 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     productores_filter = productores_filter[productores_filter['GM'].isin(margin)]
     centros = centros_municipio.copy()
     centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)]
-    benef_filter = base_municipios[base_municipios['Producto'] == producto_sel]
+    benef_filter = base_municipios.copy()
+    benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
     benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
     benef_filter = benef_filter[benef_filter['GM_2020'].isin(margin)]
     benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
@@ -2641,7 +2644,7 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
                 ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
         else:
-            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio), color=color, children=[
+            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio), fillOpacity=0, color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
@@ -2688,44 +2691,49 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
         'Centros de Acopio': centros,
         'Volumen Producción': volumen_produccion
     }
-
+    
     # class MAP
-    class Capas():
+    def Capas(features):
         # constructor
-        def __init__(self, background_style=bstyle):
-            self.base_layer = [dl.TileLayer(),
-                                #dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
-                                #html.Button("Zoom in", id="zoom_in"),
-                                dl.FullScreenControl(),
-                                info,
-                                base]
+        # def __init__(self, background_style=bstyle):
+        base_layer = [#dl.TileLayer(),
+                      dl.GestureHandling(),
+                      #dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
+                      # #html.Button("Zoom in", id="zoom_in"),
+                      #dl.FullScreenControl(),
+                      info,
+                      base]
         # function
-        def add(self, features):
+        # def add(self, features):
             # add layers
-            for feature in features:
-                self.base_layer.append(layers[feature])
+        for feature in features:
+            #self.
+            base_layer.append(layers[feature])
+            if feature == 'Centros de acopio':
                 
-                if feature == 'Centros de acopio':
-                    self.base_layer.append(info_grado_marginacion)
-                if feature == 'Beneficiarios':
-                    self.base_layer.append(info_num_benef)
-                    self.base_layer.append(info_grado_marginacion)
-                if (feature == 'Productores') and int(anio_sel) == 2021:
-                    self.base_layer.append(info_productores)
-                if feature == 'Volumen Producción':
-                    self.base_layer.append(info_vol_prod)
-                    self.base_layer.append(colorbar)
+                base_layer.append(info_grado_marginacion)
+            if feature == 'Beneficiarios':
+                
+                base_layer.append(info_num_benef)
+                base_layer.append(info_grado_marginacion)
+            if (feature == 'Productores') and int(anio_sel) == 2021:
+                
+                base_layer.append(info_productores)
+            if feature == 'Volumen Producción':
+                
+                base_layer.append(info_vol_prod)
+                base_layer.append(colorbar)
                
                 # if (feature == 'Beneficiarios') or (feature == 'Productores') or (feature == 'Centros de Acopio'):
                 #     self.base_layer.append(info_grado_marginacion)
             
-            return self.base_layer
+        return base_layer
         
     # background style del mapa
-    children_layer = Capas().add(capas_sel)
+    children_layer = Capas(capas_sel)
     # dl.LayersControl([dmc.Text('Muy Bajo')])
     tab2_mapa_content = html.Div([
-        dl.Map(center=[22.76, -102.58], zoom=5, children=dl.LayersControl(children_layer, position='bottomright', hideSingleBase=True, collapsed=True)
+        dl.Map(center=[22.76, -102.58], zoom=5, children=[dl.LayersControl(children_layer, position='bottomright')]
            , style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
         #html.Div(id="state"), html.Div(id="info2")
     ])
@@ -2744,13 +2752,13 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
 #         return n
 
  # capa base
-capa_base = dl.Overlay(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file
+capa_base = dl.Pane(dl.GeoJSON(data=data2,  # url to geojson file
                         options=dict(style=style_handle),  # how to style each polygon
                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
                         zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
                         hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
                         hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
-                        id='states')), name='base2', checked=True)   
+                        id='states'), style={'zIndex':0}) 
     
     
 ######### Mapa criterios simulados   ################
@@ -2759,7 +2767,7 @@ capa_base = dl.Overlay(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson fi
         Output('mapa2', 'children'),
         Input('submit-button', 'n_clicks'),
         Input('criterios1', 'value'),
-        Input('chip-observado', 'value'),
+        #Input('chip-beneficiarios', 'value'),
         #Input("beneficiarios-opciones", "value"),
         #Input("radio-centros", "value"),
         #Input("transfer-list-simple", "value"),
@@ -2769,7 +2777,7 @@ capa_base = dl.Overlay(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson fi
     )
 
 # def actualizar_mapa2(clicks, margin_sel, benef_sel,capas_sel, transfer_sel, producto_sel, anio_sel):
-def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
+def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
 
     # capas
     #capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
@@ -2789,18 +2797,24 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
     #centros = centros_municipio.copy()
     #centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)].dropna(axis=0)
     # base beneficiarios nivel municipio
-    benef_filter = base_municipios[base_municipios['Anio'] == int(anio_sel)]
+    productores_filter = base_productores.copy()
+    productores_filter = productores_filter[productores_filter['Producto']==producto_sel]
+    productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
+ 
+    # base beneficiarios
+    benef_filter = base_municipios.copy()
     benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
+    benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
+    benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
+    
     # base productores
     # se seleccionan los registros por criterio seleccionado
     # if criterios == "Criterio de Marginación":
     #     productores_filter = base_productores.dropna(columns=['Escenario1'])
     # else:
-    #     # criterio de precio
-    #     productores_filter = base_productores.dropna(columns=['Escenario2'])
-    productores_filter = base_productores.copy()   
-    productores_filter = productores_filter[productores_filter['Producto'] == producto_sel]
-    productores_filter = productores_filter[productores_filter['Anio'] == int(anio_sel)]
+    #  criterio de precio
+    #  productores_filter = base_productores.dropna(columns=['Escenario2'])
+
     #productores_filter = productores_filter[productores_filter['GM_2020'].isin(margin)].dropna(axis=0)
 
 
@@ -2814,45 +2828,103 @@ def actualizar_mapa2(clicks, criterios_sel, benef_sel, producto_sel, anio_sel):
     #         dl.Popup("Municipio: {}".format(mun))
     #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'])])
     
-   
+    # Beneficiarios 
+    def beneficiarios_popup(ent, mun, gmargina, numbenef, monto):
+        
+            result = html.Div([
+                html.Div([
+                    html.Img(id='image-poblacion_beneficiaria2', src='../assets/poblacionBeneficiaria.png', width="65", height="65"),
+                    dmc.Text('BENEFICIARIO(S)', weight=400,color='#4e203a'),
+                ], style={'textAlign': 'center'}),
+                
+                dmc.Divider(size="xs"),
+                dbc.Row([
+                    dmc.Text(['Estado: ',ent]),
+                    dmc.Text(['Municipio: ', mun]),
+                    dmc.Space(h=4),
+                    dmc.Text(['Grado de marginación: ', gmargina]),
+                    dmc.Text(['No. Beneficiarios: ', numbenef]),
+                    dmc.Text(['Monto total del apoyo: ', f'$ {prettify(monto)}']),
+                ])
+                
+                ])
+            return result 
+    
+    
+    # Total productores 
+    def productores_popup(ent, mun,gmargina,numprod):
+        
+            result = html.Div([
+                html.Div([
+                    DashIconify(icon="noto-v1:man-farmer", width=65, height=65),
+                    #html.Img(id='image-centros-acopio2', src='../assets/centrosAcopio.png', width="65", height="65"),
+                    dmc.Text('PRODUCTORES', weight=400, color='#4e203a'),
+                ], style={'textAlign': 'center'}),
+                
+                dmc.Divider(size="xs"),
+                dbc.Row([
+                    dmc.Text(['Estado: ',ent]),
+                    dmc.Text(['Municipio: ', mun]),
+                    dmc.Space(h=4),
+                    dmc.Text(['Grado de marginación: ', gmargina]),
+                    dmc.Text(['No. Productores (Estimado): ', prettify(numprod)]),
+
+                ])
+                
+                ])
+            return result
+
     # ópción para agregar beneficarios observados
-    benef_filter = benef_filter[~benef_filter['LAT_DECIMALmean'].isna()]
-    beneficiarios = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio,dashArray=1, fillOpacity=0, color='blue', children=[
-                dl.Popup("Municipio: {}".format(mun))
-                ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])]), name='panel20', checked=True)
+    beneficiarios = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio,fillOpacity=0, color="blue", children=[
+                #dl.Popup("Municipio: {}".format(mun))
+                dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
+                dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
+    # beneficiarios = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio,dashArray=1, fillOpacity=0, color='blue', children=[
+    #             dl.Popup("Municipio: {}".format(mun))
+    #             ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])]), name='panel20', checked=True)
     
     # opción para agregar criterio del precio y marginación 
     if criterios_sel == 'Marginación':
         productores_filter = productores_filter[~productores_filter['Escenario1'].isna()]
-        productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
-            dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]), name='panel21', checked=True)
+        # productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
+        #     dl.Popup("Municipio: {}".format(mun))
+        #     ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]), name='Marginación', checked=True)
     else:
         productores_filter = productores_filter[~productores_filter['Escenario2'].isna()]
-        productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
-            dl.Popup("Municipio: {}".format(mun))
-            ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]), name='panel22',  checked=True)
+    
+    # productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
+    #     dl.Popup("Municipio: {}".format(mun))
+    #     ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]), name='Precio',  checked=True)
+    # capas
+    # Productores
+    productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
+        dl.Tooltip(f"Productores: {mun}-{ent}"),
+        dl.Popup(productores_popup(ent,mun,gmargina,numprod))
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])]), name='Productores', checked=True)
+
     # capas por defecto
-    capas = [dl.TileLayer(), dl.FullScreenControl()]
+    capas = []
     # se agregan capas
-    if len(benef_sel) > 0:
-        capas.extend([
-                 info_escenarios_marginacion,
-                 info,
-                 capa_base,
-                 beneficiarios,
-                 productores])   
-    else:   
-        capas.extend([info_escenarios_marginacion,
-                 info,
-                 capa_base,
-                 productores]) 
+    #if benef_sel == ["Beneficiarios"]:
+    capas.extend([
+                info_escenarios_marginacion,
+                info,
+                capa_base,
+                beneficiarios,
+                productores])   
+    #else:   
+        # capas.extend([
+        #          info_escenarios_marginacion,
+        #          info,
+        #          capa_base,
+        #          productores]) 
         
     # mapa
     tab2_mapa_content = html.Div([
         dl.Map(center=[22.76, -102.58], zoom=5,
-               children=dl.LayersControl(capas, position='bottomright', hideSingleBase=True, collapsed=True)
-               ,style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
+               children=dl.LayersControl(capas, position='bottomright')
+               ,style={'width': '100%', 'height': '100vh','backgroundColor':'white', 'margin': "auto", "display": "block"}),
             #html.Div(id="state"), html.Div(id="info2")
         ])
     
