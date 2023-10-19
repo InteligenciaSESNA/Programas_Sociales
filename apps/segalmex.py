@@ -2313,7 +2313,7 @@ def info_hover(feature):
 
 # contenido mapas
 # Base
-base = dl.BaseLayer(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283747
+base = dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283747
                 options=dict(style=style_handle),  # how to style each polygon
                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
@@ -2322,7 +2322,7 @@ base = dl.BaseLayer(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file 
                 # #154360
                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-                id='states')), name='Base', checked=True)
+                id='states'))
 
 # volumen producción
 def volumenProduccion_choice(producto, anio):
@@ -2345,6 +2345,23 @@ def volumenProduccion_choice(producto, anio):
                                 id='states')), name='Volumen Producción', checked=True)
 
     return volumen_produccion
+
+@app.callback(
+    Output("states", "hideout"),
+    Input("states", "n_clicks"),
+    State("states", "clickData"),
+    State("states", "hideout"),
+    prevent_initial_call=True)
+def toggle_select(_, feature, hideout):
+    selected = hideout["selected"]
+    name = feature["properties"]["name"]
+    if name in selected:
+        selected.remove(name)
+    else:
+        selected.append(name)
+    return hideout
+
+
 
 # Contenido por mapa
 content_mapa1 = html.Div(id="mapa1")
@@ -2733,7 +2750,7 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     children_layer = Capas(capas_sel)
     # dl.LayersControl([dmc.Text('Muy Bajo')])
     tab2_mapa_content = html.Div([
-        dl.Map(center=[22.76, -102.58], zoom=5, children=[dl.LayersControl(children_layer, position='bottomright')]
+        dl.Map(center=[22.76, -102.58], zoom=5, children=[dl.LayersControl([children_layer], position='bottomright')]
            , style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
         #html.Div(id="state"), html.Div(id="info2")
     ])
