@@ -1,7 +1,9 @@
 [![My Skills](https://skillicons.dev/icons?i=py,html,css,git,mysql,vscode)](https://skillicons.dev)
 
-# 📁 **Proyecto : Dashboard - SESNA**
+# 📁 **Proyecto : Visualizador Programas Sociales**
 
+
+![Mapa](./mapa_image.png)
 
 
 # Ejecución del proyecto
