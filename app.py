@@ -11,7 +11,7 @@ external_stylesheets = dbc.themes.PULSE #JOURNAL
 
 # Se inicializa la app. 
 # Los  meta tags son necesarios para hacer que el layout sea responsivo, es decir, que se adapte a la vista en
-app = dash.Dash(__name__, external_stylesheets=[external_css,external_stylesheets],
+app = dash.Dash(__name__, external_stylesheets=[external_css, external_stylesheets],
     meta_tags=[{'name':'viewport',
     'content':'width=device-width, initial-scale = 1.0, maximum-scale=1.5, minimum-scale=1.0'}])
 

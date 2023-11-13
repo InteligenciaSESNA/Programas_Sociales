@@ -296,12 +296,6 @@ info_productores = html.Div([
 
 
 
-
-
-
-
-
-
 ####   SECCIÓN : GRáfico resumen
 # gráfico
 def plot_section3(base, anio):
@@ -1531,7 +1525,9 @@ def volumenProduccion_choice(producto, anio):
 
 
 # Contenido por mapa
-content_mapa1 = html.Div(id="mapa1")
+content_mapa1 = html.Div(dl.Map(center=[22.76, -102.58], zoom=5,
+             id="mapa1", attributionControl=False,  style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
+)
 
 # content_mapa1 = html.Div([
 #         dl.Map(center=[22.76, -102.58], zoom=5, children=[base_mapa1, info]
@@ -1539,8 +1535,11 @@ content_mapa1 = html.Div(id="mapa1")
 #         #html.Div(id="state"), html.Div(id="info2")
 #     ])
 
-content_mapa2 = html.Div(id="mapa2")
+#content_mapa2 = html.Div(id="mapa2")
 
+content_mapa2 = html.Div(dl.Map(center=[22.76, -102.58], zoom=5,
+             id="mapa2", attributionControl=False,  style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
+)
 
 #  Btn regrasa a Nacional
 # @app.callback(Output('submit-button', 'n_clicks'),

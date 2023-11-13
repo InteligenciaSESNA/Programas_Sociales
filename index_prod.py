@@ -12,7 +12,8 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from app import app
 # se importan los archivos .py de la carpeta apps
-from apps import segalmex, home
+from apps.segalmex import segalmex
+from apps import home
 
 # Se inicializa el componente dropdown que sirve para hacer el menu desplegable mostrado
 # en la barra de navegación.
