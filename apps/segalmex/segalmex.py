@@ -159,6 +159,10 @@ list_capas_marginacion = initial_values = [
         {"value": "Alto", "label": "Alto", "group": "Grado Marginación"},
         {"value": "Muy alto", "label": "Muy alto", "group": "Grado Marginación"},
         {"value": "No disponible", "label": "No disponible", "group": "Grado Marginación"},
+        # Grado de marginación
+        {"value": "Pequeño", "label": "Pequeño", "group": "Tamaño Productor"},
+        {"value": "Mediano", "label": "Mediano", "group": "Tamaño Productor"},
+        {"value": "Grande", "label": "Grande", "group": "Tamaño Productor"},
     ],
 ]
 
