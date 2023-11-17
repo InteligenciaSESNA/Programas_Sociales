@@ -64,7 +64,7 @@ base = dl.Pane(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283
                 # dashArray : tipo de linea 
                 # #154360
                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
+                hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
                 id='states')), name="base", style={'zIndex':1})
 
 # volumen producción
@@ -84,7 +84,7 @@ def volumenProduccion_choice(producto, anio):
                                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
                                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
                                 hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
-                                hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
+                                hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
                                 id='states')), name='Volumen Producción', style={'zIndex':2})
 
     return volumen_produccion

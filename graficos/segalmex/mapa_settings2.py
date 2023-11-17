@@ -43,7 +43,7 @@ classes = [0, 1000,3000,5000,10000, 100000, 1000000, 3000000] #   #FF7F50
 colorscale = ['#ffffe5','#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#005a32'] # '#0B5345'
 # fillcolor : color de relleno de cada estado  
 # color : color de cortorno de cada estado
-style2 = dict(weight=2, opacity=0.9, fillColor='#B2DFDB', color='white', dashArray='1', fillOpacity=0.9)
+style2 = dict(weight=1, opacity=0.9, fillColor='#3399FF', color='white', dashArray='1', fillOpacity=0.9)
 # fillOpacity : transparencia de color de relleno
 style = dict(weight=1, opacity=0.9, fillColor='#f5cba7', color='white', dashArray='1', fillOpacity=0.9)
 # estilo centros de acopio
