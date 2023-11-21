@@ -45,7 +45,7 @@ from graficos.segalmex.mapa_settings import info, info_escenarios_marginacion, i
 
 json.load(open(root +'/datasets/sample3.json'))
 data2 = json.load(open(root +'/datasets/sample3.json'))
-
+estados_url = pd.read_excel(root + '/datasets/estados.xlsx')
 ##################################################################################
 #                                    MAPA 1
 #  Contiene información relativa a:
@@ -263,12 +263,13 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                 
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',ent]),
+                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
                     dmc.Text(['Municipio: ', mun]),
-                    dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),
-                    dmc.Text(['No. Beneficiarios: ', numbenef]),
-                    dmc.Text(['Monto total del apoyo: ', f'$ {prettify(monto)}']),
+                    dmc.Space(h=4),
+                    dmc.Text(['Núm. Beneficiarios: ', numbenef]),
+                    dmc.Text(['Monto total del apoyo: ', f'$ {prettify(np.round(monto,2))}']),
+                    dmc.Space(h=2),
                 ])
                 
                 ])
@@ -285,7 +286,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                  
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',ent]),
+                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
                     dmc.Text(['Municipio: ', mun]),
                     dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),
@@ -308,7 +309,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                 
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',ent]),
+                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
                     dmc.Text(['Municipio: ', mun]),
                     dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),

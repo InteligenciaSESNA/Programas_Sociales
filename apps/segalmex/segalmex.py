@@ -18,6 +18,7 @@ from plotly.subplots import make_subplots
 from dash import dcc, html, callback_context, no_update
 import dash_lazy_load
 import time
+import math
 from dash import dash_table as dt
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -93,13 +94,14 @@ data2 = json.load(open(root +'/datasets/sample3.json'))
 # base_2020 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2020.xlsx')
 # base_2021 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2021.xlsx')
 
-
+# url estados
+estados_urls = pd.read_excel(root + '/datasets/estados.xlsx')
 # bases Beneficiarios estado
-base_entidad = pd.read_excel(root + '/datasets/base_entidad.xlsx')
-base_entidad_tprod = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
+base_entidad = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
+#base_entidad_tprod = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
 # bases Beneficiarios Municipio
-base_municipios = pd.read_excel(root + '/datasets/base_municipio3.xlsx')
-base_municipios_tprod = pd.read_excel(root + '/datasets/base_municipio_tprod3.xlsx')
+#base_municipios = pd.read_excel(root + '/datasets/base_municipio3.xlsx')
+base_municipios = pd.read_excel(root + '/datasets/base_municipio_tprod.xlsx')
 # base productores municipio
 #base_productores_filter = pd.read_excel(root + '/datasets/baseTotalproductores.xlsx')
 # bases de centros de acopio a nivel entidad y municipal
@@ -127,7 +129,7 @@ base_resumen = pd.read_excel(root + '/datasets/resumen_montos.xlsx')
 # georeferenciación de base producción - estados
 #df_prod_est = pd.read_csv(root + '/datasets/produccion_estados.csv')
 
-# opciones
+# Opciones
 list_year = ['2019', '2020', '2021']
 list_products = ['Arroz', 'Frijol', 'Leche', 'Maíz', 'Trigo']
 list_grado_marginacion = [['Muy bajo', 'blue'],
@@ -395,7 +397,6 @@ def render_content(active):
 ###    - Gráfico2 : Nivel de marginación por estado
 #############################################################
 #######################    content3 - gráficos por municipios
-
 content2 = html.Div([
     dmc.Card(children=[
         dmc.CardSection(
@@ -778,11 +779,13 @@ def resumen_centros_acopio(clicks, feature, transfer_sel, sel_producto, sel_anio
     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
     # grado de marginación
     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-    
+    # tamaño del productor
+    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
     
     # estado: feature["properties"]["name"]
     data = centros_municipio.copy()
     data = data[data['GM_2020'].isin(margin)]
+    #data = data[data['TAMPROD'].isin(tproductor)]
     # condición
     if ('Centros de Acopio' not in capas_sel) or len(margin)==0:
         return '-'
@@ -822,7 +825,6 @@ def resumen_benef_textImage(beneficiarios):
         Input('beneficiarios-opciones', 'value'),
     )
 def resumen_benef_textImag2(beneficiarios):
-
     # condición
     if beneficiarios == 'Número de Beneficiarios':
         texto = "Pob. Beneficiaria"
@@ -848,26 +850,35 @@ def resumen_pablacion_beneficiaria(clicks, feature, beneficiario, transfer_sel, 
     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
     # grado de marginación
     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-
+    # tamaño del productor
+    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
+    
+    # estado: feature["properties"]["name"]
     data = base_municipios.copy()
     data['MONTO_APOYO_TOTALsum'] = data['MONTO_APOYO_TOTALsum'].astype('float')
     # filtros
     data = data[data['Anio'] == int(sel_anio)]
     data = data[data['Producto'] == sel_producto]
     data = data[data['GM_2020'].isin(margin)]
-    
+    # filtro para tamaño de productor
+    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        tproductor = ['Todos']
+        data = data[data['TAMPROD'].isin(tproductor)]
+    else:
+        data = data[data['TAMPROD'].isin(tproductor)]
+
     # Condición
     if ('Beneficiarios' not in capas_sel) or len(margin)==0:
         return '-'
     else:
         if beneficiario == 'Número de Beneficiarios':
             if not feature:
-                result = np.sum(data['NUM_BENEFsize'])
+                result = np.round(np.sum(data['NUM_BENEFsize']),0)
             else:
                 # filtro de estado
                 data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
                 # Sin dato nombre de dato faltante
-                result = np.sum(data_filt['NUM_BENEFsize'])
+                result = np.round(np.sum(data_filt['NUM_BENEFsize']))
 
             return "{:,}".format(result)
         else:
@@ -953,13 +964,20 @@ def resumen_volumen_incentivado_total(clicks, feature, transfer_sel, sel_product
     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
     # grado de marginación
     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-
+    # tamaño del productor
+    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
+    
     data = base_municipios.copy()
     # filtros
     data = data[data['Anio'] == int(sel_anio)]
     data = data[data['Producto'] == sel_producto]
     data = data[data['GM_2020'].isin(margin)]
-
+    # filtro para tamaño de productor
+    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        tproductor = ['Todos']
+        data = data[data['TAMPROD'].isin(tproductor)]
+    else:
+        data = data[data['TAMPROD'].isin(tproductor)]
     # condición
     if ('Beneficiarios' not in capas_sel) or len(margin)==0:
         return '-'
@@ -1001,13 +1019,20 @@ def resumen_volumen_incentivado_promedio(clicks, feature, transfer_sel, sel_prod
     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
     # grado de marginación
     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-
+    # tamaño del productor
+    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
+    
     data = base_municipios.copy()
     # filtros
     data = data[data['Anio'] == int(sel_anio)]
     data = data[data['Producto'] == sel_producto]
     data = data[data['GM_2020'].isin(margin)]
-    
+    # filtro para tamaño de productor
+    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        tproductor = ['Todos']
+        data = data[data['TAMPROD'].isin(tproductor)]
+    else:
+        data = data[data['TAMPROD'].isin(tproductor)]
     # condición
     if ('Beneficiarios' not in capas_sel) or len(margin)==0:
         return '-'
@@ -1366,6 +1391,8 @@ def get_state(clicks, feature):
     else:
         # filtro de estado
         state = feature["properties"]["name"]
+        urls_est = str(estados_urls[estados_urls['NOM_ENT']==state]['Liga'].to_list()[0])
+    
         return [
             html.H4("{}".format(feature["properties"]["name"])),
             dmc.Center(html.Img(id='image', src='../assets/'+ str(feature["properties"]["name"]) +'.png', width="65", height="65")),
@@ -1494,17 +1521,26 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     # capas
     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
+    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
     # bases
     productores_filter = base_productores.copy()
     productores_filter = productores_filter[productores_filter['Producto']==producto_sel]
     productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
     productores_filter = productores_filter[productores_filter['GM'].isin(margin)]
+    #productores_filter = productores_filter[productores_filter['TAMPROD'].isin(tproductor)]
     centros = centros_municipio.copy()
     centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)]
     benef_filter = base_municipios.copy()
     benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
     benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
     benef_filter = benef_filter[benef_filter['GM_2020'].isin(margin)]
+    # filtro para tamaño de productor
+    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        tproductor = ['Todos']
+        benef_filter = benef_filter[benef_filter['TAMPROD'].isin(tproductor)]
+    else:
+        benef_filter = benef_filter[benef_filter['TAMPROD'].isin(tproductor)]
+    # elimina referencias geográficas con valores perdidos    
     benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
      
     
