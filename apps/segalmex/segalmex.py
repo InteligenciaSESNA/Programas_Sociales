@@ -397,200 +397,200 @@ def render_content(active):
 ###    - Gráfico2 : Nivel de marginación por estado
 #############################################################
 #######################    content3 - gráficos por municipios
-content2 = html.Div([
-    dmc.Card(children=[
-        dmc.CardSection(
-            dmc.Group(
-                children=[
-                    dmc.Text("Review Pictures", weight=500),
-                    dmc.ActionIcon(
-                        DashIconify(icon="carbon:overflow-menu-horizontal"),
-                        color="gray",
-                        variant="transparent",
-                    ),
-                ],
-                position="apart",
-            ),
-            withBorder=True,
-            inheritPadding=True,
-            py="xs",
-        ),
-        dmc.Text(
-            children=[
-                dmc.Text(
-                    "200+ images uploaded",
-                    color="blue",
-                    style={"display": "inline"},
-                ),
-                " since last visit, review them to select which one should be added to your gallery",
-            ],
-            mt="sm",
-            color="dimmed",
-            size="sm",
-        ),
-        dmc.CardSection(
-            html.Iframe(id="plot-r1", style={"height": "400px", "width": "1300px"}),
-        ),
-        # dmc.CardSection(children=[
-        #         dmc.SimpleGrid(cols=2, children=[
-        #             #dbc.Group([
-        #                 # plot 1
-        #                 dmc.Group([
-        #                     dmc.CardSection(
-        #                         dmc.Group(
-        #                             children=[
-        #                                 dmc.Text("Review Pictures", weight=500),
-        #                                 dmc.ActionIcon(
-        #                                     DashIconify(icon="carbon:overflow-menu-horizontal"),
-        #                                     color="gray",
-        #                                     variant="transparent",
-        #                                 ),
-        #                             ],
-        #                             position="apart",
-        #                         ),
-        #                         withBorder=True,
-        #                         inheritPadding=True,
-        #                         py="xs",
-        #                     ),
-        #                     dmc.Text(
-        #                         children=[
-        #                             dmc.Text(
-        #                                 "200+ images uploaded",
-        #                                 color="blue",
-        #                                 style={"display": "inline"},
-        #                             ),
-        #                             " since last visit, review them to select which one should be added to your gallery",
-        #                         ],
-        #                         mt="sm",
-        #                         color="dimmed",
-        #                         size="sm",
-        #                     ),
-        #                     dmc.CardSection(
-        #                         html.Iframe(id="plot-r2", style={"height": "400px", "width": "800px"}),
-        #                     ),
-        #                 ]),
-        #                 # plot 2
-        #                 dmc.Group([
-        #                     dmc.CardSection(
-        #                         dmc.Group(
-        #                             children=[
-        #                                 dmc.Text("Review Pictures", weight=500),
-        #                                 dmc.ActionIcon(
-        #                                     DashIconify(icon="carbon:overflow-menu-horizontal"),
-        #                                     color="gray",
-        #                                     variant="transparent",
-        #                                 ),
-        #                             ],
-        #                             position="apart",
-        #                         ),
-        #                         withBorder=True,
-        #                         inheritPadding=True,
-        #                         py="xs",
-        #                     ),
-        #                     dmc.Text(
-        #                         children=[
-        #                             dmc.Text(
-        #                                 "200+ images uploaded",
-        #                                 color="blue",
-        #                                 style={"display": "inline"},
-        #                             ),
-        #                             " since last visit, review them to select which one should be added to your gallery",
-        #                         ],
-        #                         mt="sm",
-        #                         color="dimmed",
-        #                         size="sm",
-        #                     ),
-        #                     dmc.CardSection(
-        #                         html.Iframe(id="plot-r3", style={"height": "400px", "width": "800px"}),
-        #                     ),
-        #                 ]),
-        #                 #plot3
-        #                 # dmc.Group([
-        #                 #     dmc.CardSection(
-        #                 #         dmc.Group(
-        #                 #             children=[
-        #                 #                 dmc.Text("Review Pictures", weight=500),
-        #                 #                 dmc.ActionIcon(
-        #                 #                     DashIconify(icon="carbon:overflow-menu-horizontal"),
-        #                 #                     color="gray",
-        #                 #                     variant="transparent",
-        #                 #                 ),
-        #                 #             ],
-        #                 #             position="apart",
-        #                 #         ),
-        #                 #         withBorder=True,
-        #                 #         inheritPadding=True,
-        #                 #         py="xs",
-        #                 #     ),
-        #                 #     dmc.Text(
-        #                 #         children=[
-        #                 #             dmc.Text(
-        #                 #                 "200+ images uploaded",
-        #                 #                 color="blue",
-        #                 #                 style={"display": "inline"},
-        #                 #             ),
-        #                 #             " since last visit, review them to select which one should be added to your gallery",
-        #                 #         ],
-        #                 #         mt="sm",
-        #                 #         color="dimmed",
-        #                 #         size="sm",
-        #                 #     ),
-        #                 #     dmc.CardSection(
-        #                 #         html.Iframe(id="plot-r4", style={"height": "400px", "width": "400px"}),
-        #                 #     ),
-        #                 # ]),
+# content2 = html.Div([
+#     dmc.Card(children=[
+#         dmc.CardSection(
+#             dmc.Group(
+#                 children=[
+#                     dmc.Text("Review Pictures", weight=500),
+#                     dmc.ActionIcon(
+#                         DashIconify(icon="carbon:overflow-menu-horizontal"),
+#                         color="gray",
+#                         variant="transparent",
+#                     ),
+#                 ],
+#                 position="apart",
+#             ),
+#             withBorder=True,
+#             inheritPadding=True,
+#             py="xs",
+#         ),
+#         dmc.Text(
+#             children=[
+#                 dmc.Text(
+#                     "200+ images uploaded",
+#                     color="blue",
+#                     style={"display": "inline"},
+#                 ),
+#                 " since last visit, review them to select which one should be added to your gallery",
+#             ],
+#             mt="sm",
+#             color="dimmed",
+#             size="sm",
+#         ),
+#         dmc.CardSection(
+#             html.Iframe(id="plot-r1", style={"height": "400px", "width": "1300px"}),
+#         ),
+#         # dmc.CardSection(children=[
+#         #         dmc.SimpleGrid(cols=2, children=[
+#         #             #dbc.Group([
+#         #                 # plot 1
+#         #                 dmc.Group([
+#         #                     dmc.CardSection(
+#         #                         dmc.Group(
+#         #                             children=[
+#         #                                 dmc.Text("Review Pictures", weight=500),
+#         #                                 dmc.ActionIcon(
+#         #                                     DashIconify(icon="carbon:overflow-menu-horizontal"),
+#         #                                     color="gray",
+#         #                                     variant="transparent",
+#         #                                 ),
+#         #                             ],
+#         #                             position="apart",
+#         #                         ),
+#         #                         withBorder=True,
+#         #                         inheritPadding=True,
+#         #                         py="xs",
+#         #                     ),
+#         #                     dmc.Text(
+#         #                         children=[
+#         #                             dmc.Text(
+#         #                                 "200+ images uploaded",
+#         #                                 color="blue",
+#         #                                 style={"display": "inline"},
+#         #                             ),
+#         #                             " since last visit, review them to select which one should be added to your gallery",
+#         #                         ],
+#         #                         mt="sm",
+#         #                         color="dimmed",
+#         #                         size="sm",
+#         #                     ),
+#         #                     dmc.CardSection(
+#         #                         html.Iframe(id="plot-r2", style={"height": "400px", "width": "800px"}),
+#         #                     ),
+#         #                 ]),
+#         #                 # plot 2
+#         #                 dmc.Group([
+#         #                     dmc.CardSection(
+#         #                         dmc.Group(
+#         #                             children=[
+#         #                                 dmc.Text("Review Pictures", weight=500),
+#         #                                 dmc.ActionIcon(
+#         #                                     DashIconify(icon="carbon:overflow-menu-horizontal"),
+#         #                                     color="gray",
+#         #                                     variant="transparent",
+#         #                                 ),
+#         #                             ],
+#         #                             position="apart",
+#         #                         ),
+#         #                         withBorder=True,
+#         #                         inheritPadding=True,
+#         #                         py="xs",
+#         #                     ),
+#         #                     dmc.Text(
+#         #                         children=[
+#         #                             dmc.Text(
+#         #                                 "200+ images uploaded",
+#         #                                 color="blue",
+#         #                                 style={"display": "inline"},
+#         #                             ),
+#         #                             " since last visit, review them to select which one should be added to your gallery",
+#         #                         ],
+#         #                         mt="sm",
+#         #                         color="dimmed",
+#         #                         size="sm",
+#         #                     ),
+#         #                     dmc.CardSection(
+#         #                         html.Iframe(id="plot-r3", style={"height": "400px", "width": "800px"}),
+#         #                     ),
+#         #                 ]),
+#         #                 #plot3
+#         #                 # dmc.Group([
+#         #                 #     dmc.CardSection(
+#         #                 #         dmc.Group(
+#         #                 #             children=[
+#         #                 #                 dmc.Text("Review Pictures", weight=500),
+#         #                 #                 dmc.ActionIcon(
+#         #                 #                     DashIconify(icon="carbon:overflow-menu-horizontal"),
+#         #                 #                     color="gray",
+#         #                 #                     variant="transparent",
+#         #                 #                 ),
+#         #                 #             ],
+#         #                 #             position="apart",
+#         #                 #         ),
+#         #                 #         withBorder=True,
+#         #                 #         inheritPadding=True,
+#         #                 #         py="xs",
+#         #                 #     ),
+#         #                 #     dmc.Text(
+#         #                 #         children=[
+#         #                 #             dmc.Text(
+#         #                 #                 "200+ images uploaded",
+#         #                 #                 color="blue",
+#         #                 #                 style={"display": "inline"},
+#         #                 #             ),
+#         #                 #             " since last visit, review them to select which one should be added to your gallery",
+#         #                 #         ],
+#         #                 #         mt="sm",
+#         #                 #         color="dimmed",
+#         #                 #         size="sm",
+#         #                 #     ),
+#         #                 #     dmc.CardSection(
+#         #                 #         html.Iframe(id="plot-r4", style={"height": "400px", "width": "400px"}),
+#         #                 #     ),
+#         #                 # ]),
 
-        #             #], className='col-12'),
-        #             # html.Iframe(id="plot-r2", style={"height": "300px", "width": "400px"}),
-        #             # html.Iframe(id="plot-r3", style={"height": "300px", "width": "400px"}),
-        #             #html.Iframe(id="plot-r4", style={"height": "300px", "width": "400px"}),
-        #         ]),
-        #     ],
-        #     withBorder=True,
-        #     inheritPadding=True,
-        #     mt="sm",
-        #     pb="md",
-        # ),
-        # dmc.CardSection(
-        #     dmc.Group(
-        #         children=[
-        #             dmc.Text("Review Pictures", weight=500),
-        #             dmc.ActionIcon(
-        #                 DashIconify(icon="carbon:overflow-menu-horizontal"),
-        #                 color="gray",
-        #                 variant="transparent",
-        #             ),
-        #         ],
-        #         position="apart",
-        #     ),
-        #     withBorder=True,
-        #     inheritPadding=True,
-        #     py="xs",
-        # ),
-        # dmc.Text(
-        #     children=[
-        #         dmc.Text(
-        #             "200+ images uploaded",
-        #             color="blue",
-        #             style={"display": "inline"},
-        #         ),
-        #         " since last visit, review them to select which one should be added to your gallery",
-        #     ],
-        #     mt="sm",
-        #     color="dimmed",
-        #     size="sm",
-        # ),
-        # dmc.CardSection(
-        #     html.Iframe(id="plot-r5", style={"height": "600px", "width": "1300px"}),
-        # ),
-    ],
-    withBorder=True,
-    shadow="sm",
-    radius="md",
-    className="col-12"),
+#         #             #], className='col-12'),
+#         #             # html.Iframe(id="plot-r2", style={"height": "300px", "width": "400px"}),
+#         #             # html.Iframe(id="plot-r3", style={"height": "300px", "width": "400px"}),
+#         #             #html.Iframe(id="plot-r4", style={"height": "300px", "width": "400px"}),
+#         #         ]),
+#         #     ],
+#         #     withBorder=True,
+#         #     inheritPadding=True,
+#         #     mt="sm",
+#         #     pb="md",
+#         # ),
+#         # dmc.CardSection(
+#         #     dmc.Group(
+#         #         children=[
+#         #             dmc.Text("Review Pictures", weight=500),
+#         #             dmc.ActionIcon(
+#         #                 DashIconify(icon="carbon:overflow-menu-horizontal"),
+#         #                 color="gray",
+#         #                 variant="transparent",
+#         #             ),
+#         #         ],
+#         #         position="apart",
+#         #     ),
+#         #     withBorder=True,
+#         #     inheritPadding=True,
+#         #     py="xs",
+#         # ),
+#         # dmc.Text(
+#         #     children=[
+#         #         dmc.Text(
+#         #             "200+ images uploaded",
+#         #             color="blue",
+#         #             style={"display": "inline"},
+#         #         ),
+#         #         " since last visit, review them to select which one should be added to your gallery",
+#         #     ],
+#         #     mt="sm",
+#         #     color="dimmed",
+#         #     size="sm",
+#         # ),
+#         # dmc.CardSection(
+#         #     html.Iframe(id="plot-r5", style={"height": "600px", "width": "1300px"}),
+#         # ),
+#     ],
+#     withBorder=True,
+#     shadow="sm",
+#     radius="md",
+#     className="col-12"),
     
     
-],style={"paddin": '0rem', 'marginLeft':'2rem', 'marginRight':'2rem'})
+# ],style={"paddin": '0rem', 'marginLeft':'2rem', 'marginRight':'2rem'})
 
 
 
@@ -608,11 +608,11 @@ layout = dbc.Container([
         #  header
         seccion1,
         # Introduccion
-        seccion2,
+        #seccion2,
         # Resumen: Pie plot
-        seccion3,
+        #seccion3,
         # Filtros principales : Año - producto
-        seccion5,
+        #seccion5,
         # Introduccion
         seccion4,
         # Mapa
@@ -1115,16 +1115,16 @@ tab1_capas_criterios = html.Div([
                                         ], id='resumen-centros_acopio', style={'marginTop':'0em',"textAling":"center", "color":"red", 'font-size': '32px'}),
                                         )]),
                                         dbc.Row([html.Div([
-                                            dmc.Text("Centros Acopio", color='grey', weight=500, align='center', style={"fontSize": 10}),
+                                            dmc.Text("Centros  Acopio", color='grey', weight=500, align='center', style={"fontSize": 11}),
                                             ]),
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
                                 ], style={'border-radius': '5px', 'paddin':'0rem'}),
                             ],
-                            withBorder=True,
+                            withBorder=False,
                             shadow="sm",
                             radius="md",
-                            style={"width": 180, "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
                 ], style={'fontSize':'12px'}),
                 # card2 : Beneficiarios
                 dmc.Tooltip(
@@ -1154,14 +1154,14 @@ tab1_capas_criterios = html.Div([
                                     ], className="card col-9 border-0 bg-transparent"),
                                 ], style={'border-radius': '5px', 'paddin':'0rem'}),
                             ],
-                            withBorder=True,
+                            withBorder=False,
                             shadow="sm",
                             radius="md",
-                            style={"width": 180, "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                            style={"padding":'0rem', 'backgroundColor': '#F4F6F6'},),
                 ], style={'fontSize':'12px'}),
                 # Card 3 : Monto de apoyos
                 dmc.Tooltip(
-                        multiline=True,
+                        multiline=False,
                         width=200,
                         withArrow=True,
                         transition="fade",
@@ -1181,17 +1181,17 @@ tab1_capas_criterios = html.Div([
                                         ], id='resumen-volumen_incentivado_total', style={'marginTop':'0em',"textAling":"center", "color":"green", 'font-size': '32px'}),
                                         )]),
                                         dbc.Row([html.Div([
-                                            dmc.Text("Vol. Incentivado (Total)", color='grey', weight=500, align='center', style={"fontSize": 11}),
+                                            dmc.Text("Vol. Incentivado (Total)", color='grey', weight=500, align='center', style={"fontSize": 10}),
                                             ]),
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
                                 ], style={'border-radius': '5px', 'paddin':'0rem'}),
                             ],
-                            withBorder=True,
+                            withBorder=False,
                             shadow="sm",
                             radius="md",
-                            style={"width": 180, "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
-                ], style={'fontSize':'11px'}),
+                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                ], style={'fontSize':'10px'}),
                 # Card 4: Vol incentivado promedio
                 dmc.Tooltip(
                         multiline=True,
@@ -1214,18 +1214,18 @@ tab1_capas_criterios = html.Div([
                                         ], id='resumen-volumen_incentivado_promedio', style={'marginTop':'0em',"textAling":"center", "color":"grey", 'font-size': '32px'}),
                                         )]),
                                         dbc.Row([html.Div([
-                                            dmc.Text("Vol. Incentivado (Prom)", color='gray', weight=500, align='center', style={"fontSize": 11}),
+                                            dmc.Text("Vol. Incentivado (Prom)", color='gray', weight=500, align='center', style={"fontSize": 10}),
                                             ]),
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
                                 ], style={'border-radius': '5px', 'paddin':'0rem'}),
                             ],
-                            withBorder=True,
+                            withBorder=False,
                             shadow="sm",
                             radius="md",
-                            style={"width": 180, "padding":'0rem', 'backgroundColor': '#F4F6F6'},)
-                ], style={'fontSize':'11px'}),
-            ],style={"width": 360, "height": 160}
+                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},)
+                ], style={'fontSize':'10px'}),
+            ],
         ),
     ], style={'marginLeft':'0rem', 'paddingLeft':'0rem'}),
 
