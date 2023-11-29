@@ -37,7 +37,7 @@ navbar = dbc.Navbar(
             dbc.Row([
                 dbc.Col(
                     html.Img(src="assets/Logotipo_blanco.png", height="40px"), 
-                className='col-2', style={'paddingRight':'2rem', 'text-align':'right'}),
+                className='col-3', style={'paddingRight':'2rem', 'text-align':'right'}),
                
                 dbc.Col([
                     html.A(
@@ -50,18 +50,18 @@ navbar = dbc.Navbar(
                         style={"textDecoration": "none"},
                     ),  
                 ], className='col-9', style={'paddingLeft':'1rem','paddingBottom':'1rem', 'text-align':'left'}),
-                dbc.Col([
-                    dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
-                    # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
-                    dbc.Collapse(
-                        dbc.Nav(
-                            [dropdown], navbar=True
-                        ),
-                        id="navbar-collapse",
-                        is_open=False,
-                        navbar=True,
-                    ),  
-                ], className='col-1', align="right", style={'paddingRight':'1rem'}),
+                # dbc.Col([
+                #     dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
+                #     # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
+                #     dbc.Collapse(
+                #         dbc.Nav(
+                #             [dropdown], navbar=True
+                #         ),
+                #         id="navbar-collapse",
+                #         is_open=False,
+                #         navbar=True,
+                #     ),  
+                # ], className='col-1', align="right", style={'paddingRight':'1rem'}),
             ], className='col-12'),
             
         ], style={'height':'5rem'}

@@ -1092,7 +1092,7 @@ tab1_capas_criterios = html.Div([
     ############### Tablero resumen
     dmc.Card([
         #dmc.CardSection([
-            dmc.SimpleGrid(cols=2,children=[
+            dmc.SimpleGrid(cols=2,  children=[
                 # card1 : centros de acopio
                 dmc.Tooltip(
                         multiline=True,
@@ -1225,9 +1225,9 @@ tab1_capas_criterios = html.Div([
                             radius="md",
                             style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},)
                 ], style={'fontSize':'10px'}),
-            ],
+            ], 
         ),
-    ], style={'marginLeft':'0rem', 'paddingLeft':'0rem'}),
+    ], style={'marginLeft':'0.5rem', 'paddingLeft':'0rem'}),
 
 ])
 
