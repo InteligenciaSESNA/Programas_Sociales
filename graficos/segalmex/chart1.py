@@ -309,7 +309,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                 
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
+                    dmc.Text(['Estado: ',ent]),
                     dmc.Text(['Municipio: ', mun]),
                     dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),
@@ -341,7 +341,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     beneficiarios = benef_choice(benef_sel)
 
     # Centro de acopio
-    centros = dl.Overlay(dl.LayerGroup([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[12, 16]), children=[
+    centros = dl.Overlay(dl.LayerGroup([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[8, 12]), children=[
                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
                                     dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
                                     ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])]), name='Centros de Acopio', checked=True)

@@ -35,9 +35,6 @@ import random
 import json
 
 
-
-
-
 ####################################################################################
 #  Barplot
 #   Gráfico de barras: muestra los montos ejercidos del programa social por año-producto

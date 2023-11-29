@@ -100,7 +100,7 @@ estados_urls = pd.read_excel(root + '/datasets/estados.xlsx')
 base_entidad = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
 #base_entidad_tprod = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
 # bases Beneficiarios Municipio
-#base_municipios = pd.read_excel(root + '/datasets/base_municipio3.xlsx')
+base_municipios0 = pd.read_excel(root + '/datasets/base_municipio3.xlsx')
 base_municipios = pd.read_excel(root + '/datasets/base_municipio_tprod.xlsx')
 # base productores municipio
 #base_productores_filter = pd.read_excel(root + '/datasets/baseTotalproductores.xlsx')
@@ -1917,7 +1917,7 @@ capa_base = dl.Pane(dl.GeoJSON(data=data2,  # url to geojson file
                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
                         zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
                         hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
-                        hoverStyle=arrow_function(dict(weight=4, fillColor='#A91304', color='#A91304',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
+                        hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
                         id='states'), style={'zIndex':0}) 
     
     
@@ -1962,7 +1962,7 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
  
     # base beneficiarios
-    benef_filter = base_municipios.copy()
+    benef_filter = base_municipios0.copy()
     benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
     benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
     benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
