@@ -46,8 +46,7 @@ cultivos_cambios = {'Trigo grano':'Trigo',
                     'Leche':'Leche',
                     'Frijol':'Frijol'}
 # base .json de estados
-json.load(open(root +'/datasets/sample3.json'))
-data2 = json.load(open(root +'/datasets/sample4.json'))
+data2 = json.load(open(root +'/datasets/geoVolProd.json'))
 # base .json de todos los municipios
 # data3 = json.load(open(root +'/datasets/mun.json'))
 # base lista de url's de todos los estados
@@ -196,7 +195,7 @@ def get_card_poblacion_beneficiaria(app):
                     # filtro de estado
                     data_filt = data[data['cve_ent'] == feature["properties"]["id"]]
                     # Sin dato nombre de dato faltante
-                    result = np.round((data_filt['benef_total']))
+                    result = np.round(np.sum(data_filt['benef_total']))
 
                 return "{:,}".format(result)
             else:
