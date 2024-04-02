@@ -3,8 +3,8 @@
 # 📁 **Proyecto : Visualizador Programas Sociales**
 
 
-![Mapa](./mapa_image.png)
-
+#![Mapa](./mapa_image.png)
+![Mapa](./mapa_image2.gif)
 
 # Ejecución del proyecto
 
