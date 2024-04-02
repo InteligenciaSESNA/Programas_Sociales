@@ -41,7 +41,7 @@ import pymysql
 from apps.segalmex import reglas_operacion
 
 
-list_year = ['2019', '2020', '2021']
+list_year = ['2019','2020','2021','2022']
 list_products = ['Arroz', 'Frijol', 'Leche', 'Maíz', 'Trigo']
 #################################################################
 #          Filtros principales (año -producto) - Descargas
@@ -128,7 +128,7 @@ seccion4 = html.Div([
                             ),
                         id="producto",
                         data=list_products,
-                        value='Frijol',
+                        value='Maíz',
                         searchable=True,
                         nothingFound="No options found",
                         style={"textAlign": "left"},
@@ -139,9 +139,7 @@ seccion4 = html.Div([
             dbc.Col([
                 html.Center(
                     dbc.Row([
-                        
                         dbc.Col([
-                            
                             dmc.Button(
                                 'Actualizar',
                                 id='submit-button',

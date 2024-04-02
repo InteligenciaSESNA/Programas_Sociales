@@ -1763,6 +1763,631 @@ ro_2021_leche = html.Div(
                             ],),
                         ], ),
                     ],style={'opacity':'0.75'})
+
+######################################################################
+##########################   2022 - Maíz  ############################
+######################################################################
+ro_2022_maiz = html.Div(
+                    #dmc.Accordion(id="accordion-uno"),
+                    #dmc.Text(id="accordion-text-uno", mt=10),
+                    
+                    #dmc.BackgroundImage(
+                        
+                    #    src="/assets/maiz-mexico.jpg",
+                        children=[
+                        
+                        # Título                                # TÍTULO
+                        #dmc.Text("Reglas de Operación (Trigo-2020)", color='white', weight=700, style={'fontSize':24} ),
+                        html.Br(),
+                            # spoiler (text)
+                        dmc.Spoiler(
+                        showLabel="Continuar leyendo",
+                        hideLabel="Ocultar",
+
+                        maxHeight=200,
+                        children=[
+                            dbc.Row([
+                                dbc.Col([  
+                                    # Subtitulo
+                                    dmc.Text("Posibles beneficiarios:", color='#7c90ab', weight=700, style={'fontSize':20, 'padding':'1rem'} ),
+                                    # Texto principal
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , color='white',  style={"fontSize": 18, 'padding':'1rem'}),
+                                    # html.Br(),
+                                    # Tabla
+                                    dmc.List(
+                                        dmc.ListItem([
+                                            dmc.Text(
+                                                """Maíz de pequeños productores: todos los productores poseedores de una superficie de cultivo de hasta 5 (cinco) hectáreas de temporal. En este límite, las fracciones de hectárea hasta 0.5 se redondeará al número inferior."""
+                                            , color='white', align="justify",  style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # Tabla
+                                            html.Center(
+                                                dmc.Table(
+                                                [html.Thead(html.Tr([
+                                                            html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                                            html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                                html.Tbody([html.Tr([html.Td("6,805"), html.Td("35 Ton")])])],
+                                                striped=False,
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True,
+                                                
+                                                style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'1rem'}),
+                                            ), 
+                                            dmc.Text(
+                                                """*Adicional $160 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo."""
+                                            , color='white', align="justify",  style={"fontSize": 11, 'padding':'1rem'}),
+                                            
+                                            dmc.Text(
+                                                """Maíz de medianos productores: todos los productores de maíz con tierras de temporal y/o de riego con hasta 50 (cincuenta) hectáreas en propiedad y/o usufructo que comercialicen formalmente. En este límite, las fracciones de hectárea hasta 0.5 se redondeará al número inferior."""
+                                            , color='white', align="justify",  style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # Tabla
+                                            html.Center(
+                                                dmc.Table(
+                                                [html.Thead(html.Tr([
+                                                            html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                                            html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                                html.Tbody([html.Tr([html.Td("Solo incentivo"), html.Td("600 Ton")])])],
+                                                striped=False,
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True,
+                                                
+                                                style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'1rem'}),
+                                            ),
+                                              
+                                        ]),
+                                    ),
+                                    
+                                    html.Br(),
+                                    # Pie
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo. """
+                                    # , style={"fontSize": 12}),
+                                    # html.Br(),
+                                    
+                                ],),
+                                dbc.Col([  
+                                    # Subtitulo
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , style={"fontSize": 18}),
+                                    #html.Br(),
+                                    # break
+                                    html.Br(),
+                                    
+                                    html.Div([
+                                        dmc.Text("""Fuente: """, color='white', style={"fontSize": 18}),
+                                        dmc.Text([
+                                                """ACUERDO por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021. Disponible: """
+                                            ,html.A("Liga", 
+                                                href='https://dof.gob.mx/nota_detalle.php?codigo=5676231&fecha=30/12/2022#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),
+                                        
+                                        # dmc.Text([
+                                        #         """PRIMER Acuerdo Modificatorio al similar por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021, publicado el 28 de diciembre de 2020. Disponible en: """
+                                        #     ,html.A("Liga", 
+                                        #         href='https://www.dof.gob.mx/nota_detalle.php?codigo=5633514&fecha=22/10/2021#gsc.tab=0', 
+                                        #         target="_blank", 
+                                        #         style={'color':'#07B8F1'}),
+                                        #     ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),           
+                                    ], style={'paddingLeft':'1rem'}),   
+                                  html.Br(),
+                                    
+                                ],),
+                            ],),
+                        ], ),
+                    ],style={'opacity':'0.75'})
+
+
+##########################   2020 - Frijol  ####################
+ro_2022_frijol = html.Div(
+                    #dmc.Accordion(id="accordion-uno"),
+                    #dmc.Text(id="accordion-text-uno", mt=10),
+                    
+                    #dmc.BackgroundImage(
+                        
+                    #    src="/assets/maiz-mexico.jpg",
+                        children=[
+                        
+                        # Título                                # TÍTULO
+                        #dmc.Text("Reglas de Operación (Trigo-2020)", color='white', weight=700, style={'fontSize':24} ),
+                        html.Br(),
+                            # spoiler (text)
+                        dmc.Spoiler(
+                        showLabel="Continuar leyendo",
+                        hideLabel="Ocultar",
+
+                        maxHeight=200,
+                        children=[
+                            dbc.Row([
+                                dbc.Col([  
+                                    # Subtitulo
+                                    dmc.Text("Posibles beneficiarios:", color='#7c90ab', weight=700, style={'fontSize':20, 'padding':'1rem'} ),
+                                    # Texto principal
+                                    dmc.Text(
+                                        """Todos los productores poseedores de una superficie de cultivo de hasta 30 (treinta) hectáreas de temporal o (cinco) 5 hectáreas de riego. En estos límites, las fracciones de hectárea hasta 0.5 se redondeará al número inferior."""
+                                    , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                    html.Br(),
+                                    # Tabla
+                                    html.Center(
+                                        dmc.Table(
+                                        [html.Thead(html.Tr([
+                                                    html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                                    html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                        html.Tbody([html.Tr([html.Td("17,344"), html.Td("15 Ton")])])],
+                                        striped=False,
+                                        highlightOnHover=False,
+                                        withBorder=True,
+                                        horizontalSpacing=4,
+                                        withColumnBorders=True,
+                                        
+                                        style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'1rem'}),
+                                    ), 
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo."""
+                                    # , color='white',  style={"fontSize": 11, 'padding':'1rem'}),
+                                    # # Pie
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo. """
+                                    # , style={"fontSize": 12}),
+                                    # html.Br(),
+                                    
+                                    
+                                    
+                                ],),
+                                dbc.Col([  
+                                    # Subtitulo
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , style={"fontSize": 18}),
+                                    #html.Br(),
+                                    # Tabla
+                                    # dmc.List(
+                                    #     dmc.ListItem([
+                                    #         dmc.Text(
+                                    #             """Apoyos para el trigo cristalino. Para el trigo cristalino destinado a la industria molinera nacional, se apoyarán hasta 50 (cincuenta) toneladas por productor con un incentivo del 40% del otorgado para trigo panificable descrito en la tabla anterior como “precio de garantía”. Este apoyo sólo se aplicará en Baja California, en Sonora y en el Bajío."""
+                                    #         , color='white', style={"fontSize": 18, 'padding':'1rem'}),
+                                    #         html.Br(),
+                                    #         # table
+                                    #         html.Center(
+                                    #             dmc.Table(
+                                    #             [html.Thead(html.Tr([
+                                    #                         html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                    #                         html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                    #             html.Tbody([html.Tr([html.Td("5,790"), html.Td("100 Ton")])])],
+                                    #             striped=False,
+                                    #             highlightOnHover=False,
+                                    #             withBorder=True,
+                                    #             horizontalSpacing=4,
+                                    #             withColumnBorders=True,
+                                                
+                                    #             style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'8rem'}),
+                                    #         ),          
+                                    #     ]),
+                                    # ),
+                                    html.Br(),
+                                    html.Div([
+                                        dmc.Text("""Fuente: """, color='white', style={"fontSize": 18}),
+                                        dmc.Text([
+                                                """ACUERDO por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021. Disponible: """
+                                            ,html.A("Liga", 
+                                                href='https://dof.gob.mx/nota_detalle.php?codigo=5676231&fecha=30/12/2022#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),
+                                        
+                                        # dmc.Text([
+                                        #         """PRIMER Acuerdo Modificatorio al similar por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021, publicado el 28 de diciembre de 2020. Disponible en: """
+                                        #     ,html.A("Liga", 
+                                        #         href='https://www.dof.gob.mx/nota_detalle.php?codigo=5633514&fecha=22/10/2021#gsc.tab=0', 
+                                        #         target="_blank", 
+                                        #         style={'color':'#07B8F1'}),
+                                        #     ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),           
+                                    ], style={'paddingLeft':'1rem'}),   
+                            
+                                    
+                                ],),
+                            ],),
+                        ], ),
+                    ],style={'opacity':'0.75'})
+
+
+############             2020 - Trigo
+ro_2022_trigo = html.Div(
+                    #dmc.Accordion(id="accordion-uno"),
+                    #dmc.Text(id="accordion-text-uno", mt=10),
+                    
+                    #dmc.BackgroundImage(
+                        
+                    #    src="/assets/maiz-mexico.jpg",
+                        children=[
+                        
+                        # Título                                # TÍTULO
+                        #dmc.Text("Reglas de Operación (Trigo-2020)", color='white', weight=700, style={'fontSize':24} ),
+                        html.Br(),
+                            # spoiler (text)
+                        dmc.Spoiler(
+                        showLabel="Continuar leyendo",
+                        hideLabel="Ocultar",
+
+                        maxHeight=200,
+                        children=[
+                            dbc.Row([
+                                dbc.Col([  
+                                    # Subtitulo
+                                    dmc.Text("Posibles beneficiarios:", color='#7c90ab', weight=700, style={'fontSize':20} ),
+                                    # Texto principal
+                                    dmc.Text(
+                                        """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    , color='white', align="justify",  style={"fontSize": 18, 'padding':'1rem'}),
+                                    html.Br(),
+                                    # Tabla
+                                    dmc.List(
+                                        dmc.ListItem([
+                                            dmc.Text(
+                                                """Apoyos para el trigo panificable. La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            dmc.Text(
+                                                """Modalidad 1. Las 200 toneladas recibirán apoyo para la adquisición del IAR."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            dmc.Text(
+                                                """Modalidad 2. Las 100 toneladas recibirán el 50% del complemento determinado por SEGALMEX (diferencia entre el precio de garantía menos el precio de referencia)."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            dmc.Text(
+                                                """Apoyo básico: Las primeras 200 toneladas por productor elegible recibirán el apoyo que se determine para la adquisición del IAR (Modalidad 1), o este apoyo y el complemento, basado en la diferencia entre el precio de garantía y el precio de referencia que establecerá SEGALMEX (Modalidad 2)."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            dmc.Text(
+                                                """Apoyo por productividad: Se otorga a las 100 toneladas adicionales siempre y cuando su superficie y rendimiento le permitan obtener este volumen adicional a las primeras 200 y será de la siguiente manera, de acuerdo con la modalidad, mencionada en el punto I, de este artículo."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            dmc.Text(
+                                                """Precio de referencia: El precio de referencia será definido por SEGALMEX, y será dado a conocer mediante un comunicado, para cada región o entidad. Su cálculo se efectuará a partir de los precios de indiferencia (precios de futuro de la Bolsa de Chicago (CBOT) más las bases de comercialización) y/o las condiciones de mercado prevalecientes en el periodo de contratación y cosecha en cada región o entidad. Los medios de publicación serán: la página oficial de SEGALMEX y correos electrónicos a los involucrados."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            dmc.Text(
+                                                """Precio pequeños productores: Se establece un precio preferencial para los pequeños productores de trigo, considerados como aquellos que tengan hasta 8 ha, en posesión y/o usufructo. Sólo accederán a este precio aquellos productores ya registrados en los padrones de SEGALMEX u otros aceptados que determine la instancia ejecutora."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # table
+                                            html.Center(
+                                                dmc.Table(
+                                                [html.Thead(html.Tr([
+                                                            html.Th("  ",  style={'color':'white'}),
+                                                            html.Th("Precio de garantía ($) ",  style={'color':'white'}),
+                                                            html.Th("Volumen máximo (Ton)",  style={'color':'white'}),])),
+                                                html.Tbody([html.Tr([html.Td("Medianos productores"), html.Td("6,938"), html.Td("200 Ton")])]),
+                                                html.Tbody([html.Tr([html.Td("Pequeños productores"), html.Td("7,480"), html.Td("50 Ton")])])],
+                                                striped=False,
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True,
+                                                
+                                                style={'width':'80%', 'padding':'1rem', 'color':'white'}),
+                                            ),
+                                              
+                                        ]),
+                                    ),
+                                    
+                                    html.Br(),
+                                    # Pie
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo. """
+                                    # , style={"fontSize": 12}),
+                                    # html.Br(),
+                                    
+                                ],),
+                                dbc.Col([  
+                                    # Subtitulo
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , style={"fontSize": 18}),
+                                    #html.Br(),
+                                    # Tabla
+                                    dmc.List(
+                                        dmc.ListItem([
+                                            dmc.Text(
+                                                """Apoyos para el trigo cristalino. Para el trigo cristalino destinado a la industria molinera nacional, se beneficiarán hasta 150 toneladas por productor únicamente con el apoyo que se determine para la adquisición del Instrumento de Administración de Riesgos. Este apoyo sólo se aplicará en Baja California, Sonora y el Bajío."""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # table
+                                            html.Center(
+                                                dmc.Table(
+                                                [html.Thead(html.Tr([
+                                                            html.Th("Precio de garantía ($) ",  style={'color':'white'}),
+                                                            html.Th("Volumen máximo (Ton)",  style={'color':'white'}),])),
+                                                html.Tbody([html.Tr([html.Td("Solo incentivo"), html.Td("150 Ton")])])],
+                                                striped=False,
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True,
+                                                
+                                                style={'width':'80%', 'padding':'1rem', 'color':'white'}),
+                                            ), 
+                                            dmc.Text(
+                                                """*Un mismo productor puede recibir al mismo tiempo los apoyos descritos Precio de Garantía para el trigo panificable y el incentivo para el trigo cristalino."""
+                                            , color='white', align="justify", style={"fontSize": 11, 'padding':'1rem'}),
+                                        ]),
+                                    ),
+                                    html.Div([
+                                        dmc.Text("""Fuente: """, color='white', style={"fontSize": 18}),
+                                        dmc.Text([
+                                                """ACUERDO por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021. Disponible: """
+                                            ,html.A("Liga", 
+                                                href='https://dof.gob.mx/nota_detalle.php?codigo=5676231&fecha=30/12/2022#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),
+                                        
+                                        # dmc.Text([
+                                        #         """PRIMER Acuerdo Modificatorio al similar por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021, publicado el 28 de diciembre de 2020. Disponible en: """
+                                        #     ,html.A("Liga", 
+                                        #         href='https://www.dof.gob.mx/nota_detalle.php?codigo=5633514&fecha=22/10/2021#gsc.tab=0', 
+                                        #         target="_blank", 
+                                        #         style={'color':'#07B8F1'}),
+                                        #     ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),           
+                                    ], style={'paddingLeft':'1rem'}),   
+                                    
+                                    html.Br(),
+                                ],),
+                            ],),
+                        ], ),
+                    ],style={'opacity':'0.75'}),   
+                #], className="col-12"),
+
+############             2022 - Arroz
+ro_2022_arroz = html.Div(
+                    #dmc.Accordion(id="accordion-uno"),
+                    #dmc.Text(id="accordion-text-uno", mt=10),
+                    
+                    #dmc.BackgroundImage(
+                        
+                    #    src="/assets/maiz-mexico.jpg",
+                        children=[
+                        
+                        # Título                                # TÍTULO
+                        #dmc.Text("Reglas de Operación (Trigo-2020)", color='white', weight=700, style={'fontSize':24} ),
+                        html.Br(),
+                            # spoiler (text)
+                        dmc.Spoiler(
+                        showLabel="Continuar leyendo",
+                        hideLabel="Ocultar",
+
+                        maxHeight=200,
+                        children=[
+                            dbc.Row([
+                                dbc.Col([  
+                                    # Subtitulo
+                                    dmc.Text("Posibles beneficiarios:", color='#7c90ab', weight=700, style={'fontSize':20, 'padding':'1rem'} ),
+                                    # Texto principal
+                                    dmc.Text(
+                                        """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    , color='white',  align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                    html.Br(),
+                                    # Tabla
+                                    dmc.List(
+                                        dmc.ListItem([
+                                            dmc.Text(
+                                                """Apoyos para el arroz. En arroz palay destinado a la industria molinera nacional y para semilla, el apoyo para alcanzar el precio de garantía y otros estímulos adicionales, se aplicarán como sigue:"""
+                                            , color='white', align="justify", style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # table
+                                            html.Center(
+                                                dmc.Table(
+                                                [#html.Thead(html.Tr([html.Th(""),
+                                                 #           html.Th("", style={'color':'white'})])),
+                                                html.Tbody([html.Tr([html.Td("Tipo de apoyo"), html.Td("Toneladas"), html.Td("Incentivo que recibe el productor")]),
+                                                            html.Tr([html.Td("Básico"), html.Td("Hasta 120"), html.Td("100%")]),
+                                                            html.Tr([html.Td("A La Productividad"), html.Td("120.1 A 300"), html.Td("50%")])])],
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True, 
+                                                style={'padding':'1rem','width':'80%','color':'white', 'marginBottom':'1rem'}),
+                                                
+                                                ),
+                                            html.Center(
+                                                dmc.Table(
+                                                    [html.Tbody([html.Tr([html.Td("Precio de referencia"), html.Td("El precio de referencia será definido en dos categorías (para arroz grueso y para el largo), por ciclo agrícola (O.I. / P.V.) y para las diferentes regiones productoras. Su cálculo se determinará considerando los precios del arroz en el Mercado de Físicos de la Bolsa de Comercio de Chicago (CBOT), el promedio del tipo de cambio, los precios prevalecientes en el mercado nacional y los precios sugeridos y concertados entre la industria arrocera y los productores.")])])],
+                                                    highlightOnHover=False,
+                                                    withBorder=True,
+                                                    horizontalSpacing=4,
+                                                    withColumnBorders=True, 
+                                                    style={'padding':'1rem','width':'80%','color':'white' }),
+                                            ),
+                                              
+                                        ]),
+                                    ),
+                                    
+                                    html.Br(),
+                                    # Pie
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo. """
+                                    # , style={"fontSize": 12}),
+                                    # html.Br(),
+                                    
+                                ],),
+                                dbc.Col([  
+                                    # Subtitulo
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , style={"fontSize": 18}),
+                                    #html.Br(),
+                                    # Tabla
+                                    dmc.List(
+                                        dmc.ListItem([
+                                            # dmc.Text(
+                                            #     """Apoyos para el trigo cristalino. Para el trigo cristalino destinado a la industria molinera nacional, se apoyarán hasta 50 (cincuenta) toneladas por productor con un incentivo del 40% del otorgado para trigo panificable descrito en la tabla anterior como “precio de garantía”. Este apoyo sólo se aplicará en Baja California, en Sonora y en el Bajío."""
+                                            # , color='white', style={"fontSize": 18, 'padding':'1rem'}),
+                                            html.Br(),
+                                            # table
+                                            html.Center(
+                                                dmc.Table(
+                                                [html.Thead(html.Tr([
+                                                            html.Th(" ", style={'color':'white'}),
+                                                            html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                                            html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                                html.Tbody([html.Tr([html.Td("Mediano productores"), html.Td("7,328"), html.Td("180 Ton")])]),
+                                                html.Tbody([html.Tr([html.Td("Pequeños productores"), html.Td("7,913"), html.Td("80 Ton")])])],
+                                                striped=False,
+                                                highlightOnHover=False,
+                                                withBorder=True,
+                                                horizontalSpacing=4,
+                                                withColumnBorders=True,
+                                                
+                                                style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'8rem'}),
+                                            ),          
+                                        ]),
+                                    ),
+                                    html.Div([
+                                        dmc.Text("""Fuente: """, color='white', style={"fontSize": 18}),
+                                        dmc.Text([
+                                                """ACUERDO por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2022. Disponible: """
+                                            ,html.A("Liga", 
+                                                href='https://dof.gob.mx/nota_detalle.php?codigo=5676231&fecha=30/12/2022#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),
+                                        
+                                        # dmc.Text([
+                                        #         """PRIMER Acuerdo Modificatorio al similar por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021, publicado el 28 de diciembre de 2020. Disponible en: """
+                                        #     ,html.A("Liga", 
+                                        #         href='https://www.dof.gob.mx/nota_detalle.php?codigo=5633514&fecha=22/10/2021#gsc.tab=0', 
+                                        #         target="_blank", 
+                                        #         style={'color':'#07B8F1'}),
+                                        #     ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),           
+                                    ], style={'paddingLeft':'1rem'}),   
+                                  html.Br(),
+                                    
+                                ],),
+                            ],),
+                        ], ),
+                    ],style={'opacity':'0.75'}),
+
+############             2019 - Leche
+ro_2022_leche = html.Div(
+                    #dmc.Accordion(id="accordion-uno"),
+                    #dmc.Text(id="accordion-text-uno", mt=10),
+                    
+                    #dmc.BackgroundImage(
+                        
+                    #    src="/assets/maiz-mexico.jpg",
+                        children=[
+                        
+                        # Título                                # TÍTULO
+                        #dmc.Text("Reglas de Operación (Trigo-2020)", color='white', weight=700, style={'fontSize':24} ),
+                        html.Br(),
+                            # spoiler (text)
+                        dmc.Spoiler(
+                        showLabel="Continuar leyendo",
+                        hideLabel="Ocultar",
+
+                        maxHeight=200,
+                        children=[
+                            dbc.Row([
+                                dbc.Col([  
+                                    # Subtitulo
+                                    dmc.Text("Posibles beneficiarios:", color='#7c90ab', weight=700, style={'fontSize':20, 'padding':'1rem'} ),
+                                    # Texto principal
+                                    dmc.List([
+                                        dmc.ListItem(dmc.Text("Pequeños productores: de 1 a 35 vacas", color='white', style={"fontSize": 18, 'padding':'1rem'})),
+                                        dmc.ListItem(dmc.Text("Medianos productos: de 36 a 100 vacas", color='white', style={"fontSize": 18, 'padding':'1rem'})),
+                                    ], style={'marginBottom':'1rem'}),
+                                    #  dmc.Text(
+                                    #     """*LICONSA podrá comprar leche fluida a productores que rebasen el límite de vacas antes señalado, en tal caso, lo hará a precio de mercado."""
+                                    # , color='white', style={"fontSize": 12, 'marginBottom':'2rem'}),
+                                    # # dmc.Text(
+                                    #     """La totalidad de los productores de arroz con la limitante del volumen máximo por productor."""
+                                    # , color='white',  style={"fontSize": 18, 'padding':'1rem'}),
+                                    # html.Br(),
+                                    # Tabla
+                                    html.Center(
+                                        dmc.Table(
+                                        [html.Thead(html.Tr([
+                                                    html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                                    html.Th("Volumen máximo (Ltrs) ", style={'color':'white'}),])),
+                                        html.Tbody([html.Tr([html.Td("10.60/Ltr"), html.Td("30 Ltrs/vaca")])])],
+                                        striped=False,
+                                        highlightOnHover=False,
+                                        withBorder=True,
+                                        horizontalSpacing=4,
+                                        withColumnBorders=True,
+                                        
+                                        style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'1rem'}),
+                                    ), 
+                                    # dmc.Text(
+                                    #     """*Adicional $150 (CIENTO CINCUENTA PESOS 00/100 M.N.) por tonelada, sin exceder el costo de traslado de 20 toneladas por ciclo."""
+                                    # , color='white',  style={"fontSize": 11, 'padding':'1rem'}),
+                                    # # Pie
+                                   
+                                    # html.Br(),   
+                                    
+                                ],),
+                                dbc.Col([  
+                                    # Subtitulo
+                                    # dmc.Text(
+                                    #     """La totalidad de los productores que destinen su producción a la industria nacional con la limitante del volumen máximo por productor y otras descritas a continuación."""
+                                    # , style={"fontSize": 18}),
+                                    #html.Br(),
+                                    # Tabla
+                                    # dmc.List(
+                                    #     dmc.ListItem([
+                                    #         dmc.Text(
+                                    #             """Apoyos para el trigo cristalino. Para el trigo cristalino destinado a la industria molinera nacional, se apoyarán hasta 50 (cincuenta) toneladas por productor con un incentivo del 40% del otorgado para trigo panificable descrito en la tabla anterior como “precio de garantía”. Este apoyo sólo se aplicará en Baja California, en Sonora y en el Bajío."""
+                                    #         , color='white', style={"fontSize": 18, 'padding':'1rem'}),
+                                    #         html.Br(),
+                                    #         # table
+                                    #         html.Center(
+                                    #             dmc.Table(
+                                    #             [html.Thead(html.Tr([
+                                    #                         html.Th("Precio de garantía ($) ", style={'color':'white'}),
+                                    #                         html.Th("Volumen máximo (Ton) ", style={'color':'white'}),])),
+                                    #             html.Tbody([html.Tr([html.Td("5,790"), html.Td("100 Ton")])])],
+                                    #             striped=False,
+                                    #             highlightOnHover=False,
+                                    #             withBorder=True,
+                                    #             horizontalSpacing=4,
+                                    #             withColumnBorders=True,
+                                                
+                                    #             style={'width':'80%', 'padding':'1rem', 'color':'white', 'marginBottom':'8rem'}),
+                                    #         ),          
+                                    #     ]),
+                                    # ),
+                                    html.Br(),
+                                    html.Div([
+                                        dmc.Text("""Fuente: """, color='white', style={"fontSize": 18}),
+                                        dmc.Text([
+                                                """ACUERDO por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021. Disponible: """
+                                            ,html.A("Liga", 
+                                                href='https://dof.gob.mx/nota_detalle.php?codigo=5609037&fecha=28/12/2020#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),
+                                        
+                                        dmc.Text([
+                                                """PRIMER Acuerdo Modificatorio al similar por el que se dan a conocer las Reglas de Operación del Programa de Precios de Garantía a Productos Alimentarios Básicos, a cargo de Seguridad Alimentaria Mexicana, SEGALMEX, sectorizada en la Secretaría de Agricultura y Desarrollo Rural, para el ejercicio fiscal 2021, publicado el 28 de diciembre de 2020. Disponible en: """
+                                            ,html.A("Liga", 
+                                                href='https://www.dof.gob.mx/nota_detalle.php?codigo=5633514&fecha=22/10/2021#gsc.tab=0', 
+                                                target="_blank", 
+                                                style={'color':'#07B8F1'}),
+                                            ], color='white', align="justify", style={"fontSize": 12, 'padding':'1rem'}),           
+                                    ], style={'paddingLeft':'1rem'}),   
+                    
+                                ],),
+                            ],),
+                        ], ),
+                    ],style={'opacity':'0.75'})
+
+
+
 #####################################################################
 
 def resumen_reglas_operacion(Anio, Producto):
@@ -1801,7 +2426,7 @@ def resumen_reglas_operacion(Anio, Producto):
         result = ro_2020_arroz
     elif Anio == '2020' and Producto == 'Leche':
         result = ro_2020_leche
-    #############         Año 2020          ###################
+    #############         Año 2021          ###################
     elif Anio == '2021' and Producto == 'Maíz':
         result = ro_2021_maiz
     elif Anio == '2021' and Producto == 'Frijol':
@@ -1812,6 +2437,17 @@ def resumen_reglas_operacion(Anio, Producto):
         result = ro_2021_arroz
     elif Anio == '2021' and Producto == 'Leche':
         result = ro_2021_leche
+    #############         Año 2022          ###################
+    elif Anio == '2022' and Producto == 'Maíz':
+        result = ro_2022_maiz
+    elif Anio == '2022' and Producto == 'Frijol':
+        result = ro_2022_frijol
+    elif Anio == '2022' and Producto == 'Trigo':
+        result = ro_2022_trigo
+    elif Anio == '2022' and Producto == 'Arroz':
+        result = ro_2022_arroz
+    elif Anio == '2022' and Producto == 'Leche':
+        result = ro_2022_leche
     else:
         result = "No information"
     

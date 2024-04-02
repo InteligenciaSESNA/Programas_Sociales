@@ -42,10 +42,13 @@ from graficos.segalmex.mapa_settings import classes, colorscale, colorbar, style
 from graficos.segalmex.mapa_settings import get_info, get_info2
 from graficos.segalmex.mapa_settings import info, info_escenarios_marginacion, info_num_benef, info_grado_marginacion, info_productores, info_vol_prod
 
-
-json.load(open(root +'/datasets/sample3.json'))
-data2 = json.load(open(root +'/datasets/sample3.json'))
+#json.load(open(root +'/datasets/sample3.json'))
+#data2 = json.load(open(root +'/datasets/sample4.json'))
+data2 = json.load(open(root +'/datasets/geoVolProd.json'))
 estados_url = pd.read_excel(root + '/datasets/estados.xlsx')
+# georeferencia municipal
+#data3= json.load(open(root +'/datasets/sample5.json', "r", encoding="utf-8"))
+
 ##################################################################################
 #                                    MAPA 1
 #  Contiene información relativa a:
@@ -75,6 +78,9 @@ def volumenProduccion_choice(producto, anio):
     if int(anio_sel) == 2019 and producto_sel == 'Leche':
         colorprop = 1
         estilo = style2
+    elif int(anio_sel) == 2022 and producto_sel == 'Leche':
+        colorprop = 1
+        estilo = style2
     else:
         colorprop = f'{anio_sel}-{producto_sel}'
         estilo = style
@@ -88,6 +94,41 @@ def volumenProduccion_choice(producto, anio):
                                 id='states')), name='Volumen Producción', style={'zIndex':2})
 
     return volumen_produccion
+
+
+# # actualiza infor en mapa
+# @app.callback(Output("state_choice", "children"),
+#               Input("states", "click_feature"),
+#               State('producto', 'value'),
+#               State('anio', 'value'))
+# def info_hover(feature):
+#     return get_info(feature)
+# ###  nivel municipio
+# def state_choice(feature):
+#     #anio_sel = anio
+#     #producto_sel = producto
+#     state = str(feature["properties"]["id"])
+#     data = data3
+#     data = data3['features'][:]['properties']['cve_ent'] == state
+#     # condition for year
+#     # if int(anio_sel) == 2019 and producto_sel == 'Leche':
+#     #     colorprop = 1
+#     #     estilo = style2
+#     # else:
+#     #     colorprop = f'{anio_sel}-{producto_sel}'
+#     #     estilo = style
+#     # layer
+#     volumen_produccion = dl.Pane(dl.LayerGroup(dl.GeoJSON(data=data,  # url to geojson file
+#                                 options=dict(style=style_handle),  # how to style each polygon
+#                                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+#                                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+#                                 hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
+#                                 hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
+#                                 id='states')), name='Volumen Producción', style={'zIndex':2})
+
+#     return volumen_produccion
+
+
 
 def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, productores_filter, centros, benef_filter):
 
@@ -107,11 +148,11 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     # if benef_sel=='Número de Beneficiarios':
     #     benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio,fillOpacity=1,fillColor=color, color=color, children=[
     #         dl.Popup("Municipio: {}".format(mun))
-    #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'])])
+    #         ]) for mun, lat, lon, radio, color in zip(benef_filter['nom_mun'], benef_filter['latitud'], benef_filter['longitud'], benef_filter['NUM_BENEFradio'], benef_filter['gm_color'])])
     # else:
     #     benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio, color=color, children=[
     #         dl.Popup("Municipio: {}".format(mun))
-    #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'])])
+    #         ]) for mun, lat, lon, radio, color in zip(benef_filter['nom_mun'], benef_filter['latitud'], benef_filter['longitud'], benef_filter['monto_total_radio'], benef_filter['gm_color'])])
 
 
     # # opción centros de acopio y de producción
@@ -156,7 +197,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     #             #benef_option,
     #             dl.Pane([dl.Circle(center=[lat, lon], radius=2, color='red', children=[
     #                             dl.Popup("Municipio: {}".format(mun))
-    #                             ]) for lat, lon, mun in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_MUN'])]),
+    #                             ]) for lat, lon, mun in zip(centros['latitud'],centros['longitud'], centros['nom_mun'])]),
     #             #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
@@ -182,7 +223,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     #             #benef_option,
     #             dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), color='black', children=[
     #                             dl.Popup("Municipio: {}".format(mun))
-    #                             ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]),
+    #                             ]) for lat, lon, mun, radio in zip(productores_filter['latitud'],productores_filter['longitud'], productores_filter['nom_mun'], productores_filter['TotalProductores'])]),
     #             #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
@@ -244,7 +285,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     #             # benef_option,
     #             # dl.Pane([dl.Circle(center=[lat, lon], radius=6, color='red', children=[
     #             #                 dl.Popup("Municipio: {}".format(mun))
-    #             #                 ]) for lat, lon, mun in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_MUN'])]),
+    #             #                 ]) for lat, lon, mun in zip(centros['latitud'],centros['longitud'], centros['nom_mun'])]),
     #             # #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
@@ -263,7 +304,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                 
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
+                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['nom_ent']==ent]['Liga'].to_list()[0]),  target="_blank")]),
                     dmc.Text(['Municipio: ', mun]),
                     dmc.Text(['Grado de marginación: ', gmargina]),
                     dmc.Space(h=4),
@@ -276,7 +317,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
             return result 
         
     # Centros de acopio 
-    def centros_popup(ent, mun,gmargina,numcentros):
+    def centros_popup(ent, mun,loc, gmargina):
         
             result = html.Div([
                 html.Div([
@@ -286,11 +327,12 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                  
                 dmc.Divider(size="xs"),
                 dbc.Row([
-                    dmc.Text(['Estado: ',html.A(ent, href=str(estados_url[estados_url['NOM_ENT']==ent]['Liga'].to_list()[0]),  target="_blank")]),
+                    dmc.Text(['Estado: ',ent]), #html.A(ent, href=str(estados_url[estados_url['cve_ent']==ent]['Liga'].to_list()[0]), target="_blank")
                     dmc.Text(['Municipio: ', mun]),
+                    dmc.Text(['Localidad: ', loc]),
                     dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),
-                    dmc.Text(['No. Centros: ', numcentros]),
+                    dmc.Text(['No. Centros: ', 1]),
 
                 ])
                 
@@ -303,7 +345,6 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
             result = html.Div([
                 html.Div([
                     DashIconify(icon="noto-v1:man-farmer", width=65, height=65),
-                    #html.Img(id='image-centros-acopio2', src='../assets/centrosAcopio.png', width="65", height="65"),
                     dmc.Text('PRODUCTORES', weight=400, color='#4e203a'),
                 ], style={'textAlign': 'center'}),
                 
@@ -313,7 +354,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                     dmc.Text(['Municipio: ', mun]),
                     dmc.Space(h=4),
                     dmc.Text(['Grado de marginación: ', gmargina]),
-                    dmc.Text(['No. Productores (Estimado): ', prettify(numprod)]),
+                    dmc.Text(['No. Productores : ', prettify(numprod)]),
 
                 ])
                 
@@ -324,45 +365,42 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
     def benef_choice(benef_sel):
         #benef_filter = base
         if benef_sel == 'Número de Beneficiarios':
-            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio),fillOpacity=1,fillColor=color, color=color, children=[
+            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio,fillOpacity=1,fillColor=color, color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['entidad'], benef_filter['municipio'], benef_filter['latitud'], benef_filter['longitud'], benef_filter['benef_total_radio'], benef_filter['gm_color'], benef_filter['gm'], benef_filter['benef_total'], benef_filter['monto_total'])]), name='Beneficiarios', checked=True)
         else:
-            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio), fillOpacity=0, color=color, children=[
+            benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio, fillOpacity=0, color=color, children=[
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
+                ]) for ent, mun,  lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['entidad'], benef_filter['municipio'], benef_filter['latitud'], benef_filter['longitud'], benef_filter['monto_total_radio'], benef_filter['gm_color'], benef_filter['gm'], benef_filter['benef_total'], benef_filter['monto_total'])]), name='Beneficiarios', checked=True)
         return benef_option
     
     # capa de beneficiarios
     beneficiarios = benef_choice(benef_sel)
-
     # Centro de acopio
     centros = dl.Overlay(dl.LayerGroup([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[8, 12]), children=[
                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
-                                    dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
-                                    ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])]), name='Centros de Acopio', checked=True)
+                                    dl.Popup(centros_popup(ent, mun,loc, gmargina))
+                                    ]) for lat, lon,ent, mun, loc, gmargina in zip(centros['latitud'],centros['longitud'], centros['entidad'], centros['municipio'], centros['localidad'], centros['gm'])]), name='Centros de Acopio', checked=True)
 
     # Productores
     productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
         dl.Tooltip(f"Productores: {mun}-{ent}"),
         dl.Popup(productores_popup(ent, mun,gmargina,numprod))
-        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])]), name='Productores', checked=True)
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['latitud'],productores_filter['longitud'], productores_filter['entidad'], productores_filter['municipio'], productores_filter['gm'], productores_filter['productores'])]), name='Productores', checked=True)
 
     # # Base
-    # base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
-    #                 options=dict(style=style_handle),  # how to style each polygon
-    #                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-    #                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-    #                 # color : color del perimetro del hover
-    #                 # dashArray : tipo de linea 
-    #                 # #154360
-    #                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-    #                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-    #                 id='states')
+    state_choice = dl.Pane(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file
+                                options=dict(style=style_handle),  # how to style each polygon
+                                zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
+                                zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
+                                hideout=dict(colorscale=colorscale, classes=classes, colorProp='white'), #2e4053
+                                hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
+                                id='states')), name='states', style={'zIndex':3})
+
     
     
 
@@ -388,7 +426,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                       # #html.Button("Zoom in", id="zoom_in"),
                       #dl.FullScreenControl(),
                       base,
-                      info
+                      info,
                       ]
         # function
         # def add(self, features):
@@ -403,7 +441,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
                 
                 base_layer.append(info_num_benef)
                 base_layer.append(info_grado_marginacion)
-            if (feature == 'Productores') and int(anio_sel) == 2021:
+            if (feature == 'Productores'):
                 
                 base_layer.append(info_productores)
             if feature == 'Volumen Producción':

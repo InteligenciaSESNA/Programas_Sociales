@@ -40,25 +40,34 @@ from path import root
 ###################################################################################
 ###                     lectura de bases 
 ###################################################################################
+cultivos_cambios = {'Trigo grano':'Trigo',
+                    'Maíz grano blanco':'Maíz',
+                    'Arroz':'Arroz',
+                    'Leche':'Leche',
+                    'Frijol':'Frijol'}
 # base .json de estados
 json.load(open(root +'/datasets/sample3.json'))
-data2 = json.load(open(root +'/datasets/sample3.json'))
+data2 = json.load(open(root +'/datasets/sample4.json'))
 # base .json de todos los municipios
 # data3 = json.load(open(root +'/datasets/mun.json'))
 # base lista de url's de todos los estados
-estados_url = pd.read_excel(root + '/datasets/estados.xlsx')
+estados_url = pd.read_excel(root + '/datasets/estados.xlsx', converters={'cve_ent':str})
 # base de beneficiarios por entidad
-base_beneficarios_ent = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
+base_beneficiarios_ent_tprod = pd.read_excel(root + '/datasets/beneficiarios_ent.xlsx', converters={'cve_ent':str})
+#base_beneficiarios_ent_tprod['cultivo'] = base_beneficiarios_ent_tprod['cultivo'].map(cultivos_cambios)
+#base_beneficiarios_ent_tprod['tipo'] = [val.strip() for val in base_beneficiarios_ent_tprod['tipo']]
 # base de beneficiarios por municipios
-base_beneficiarios_mun = pd.read_excel(root + '/datasets/base_municipio_tprod.xlsx')
+#base_beneficiarios_mun = pd.read_excel(root + '/datasets/base_municipio3.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+base_beneficiarios_mun_tprod = pd.read_excel(root + '/datasets/beneficiarios_mun.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+base_beneficiarios_mun_tprod['tipo'] = [val.strip() for val in base_beneficiarios_mun_tprod['tipo']]
 # base centros de acopio por entidad
-base_centros_ent = pd.read_excel(root + '/datasets/centros_entidad.xlsx')
+base_centros_ent = pd.read_excel(root + '/datasets/centros_acopio_entidad.xlsx', converters={'cve_ent':str, 'cve_mun':str})
 # base centros de acopio por municipio
-base_centros_mun = pd.read_excel(root + '/datasets/centros_municipio2.xlsx')
+base_centros_mun = pd.read_excel(root + '/datasets/centros_acopio_mun.xlsx', converters={'cve_ent':str, 'cve_mun':str})
 # base de productores 
-base_productores = pd.read_excel(root + '/datasets/TotalProductores2.xlsx')
+base_productores = pd.read_excel(root + '/datasets/TotalProductores.xlsx')
 # base resumen de montos
-base_resumen = pd.read_excel(root + '/datasets/resumen_montos.xlsx')
+#base_resumen = pd.read_excel(root + '/datasets/resumen_montos.xlsx')
 
 
 def get_card_centros_acopio(app):
@@ -82,28 +91,29 @@ def get_card_centros_acopio(app):
         # grado de marginación
         margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
         # tamaño del productor
-        tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
+        #tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
 
         # estado: feature["properties"]["name"]
         data = base_centros_mun.copy()
-        data = data[data['GM_2020'].isin(margin)]
+        data = data[data['gm'].isin(margin)]
+        data = data[data['year'] == int(sel_anio)]
+        
         #data = data[data['TAMPROD'].isin(tproductor)]
         # condición
         if ('Centros de Acopio' not in capas_sel) or len(margin)==0:
             return '-'
         else:
             if not feature:
-                result = np.sum(data['NUM_CENTROS'])  
+                result = np.sum(data['num_centros'])  
             else:
                 # filtro de estado
-                data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
+                data_filt = data[data['cve_ent'] == feature["properties"]["id"]]
                 # Sin dato nombre de dato faltante
-                result = np.sum(data_filt['NUM_CENTROS'])
+                result = np.sum(data_filt['num_centros'])
                 
             res = "{:,}".format(result)
             return res
         
-    
     
 def get_card_poblacion_beneficiaria_img(app): 
     #########   CALL : Imagen Población beneficiaria / Monto Apoyo  ################
@@ -131,9 +141,9 @@ def get_card_poblacion_beneficiaria_texto(app):
     def resumen_benef_textImag2(beneficiarios):
         # condición
         if beneficiarios == 'Número de Beneficiarios':
-            texto = "Pob. Beneficiaria"
+            texto = "Población Beneficiaria"
         else:
-            texto = "Monto del Apoyo"
+            texto = "Monto Total del apoyo"
 
         return texto
 
@@ -160,18 +170,20 @@ def get_card_poblacion_beneficiaria(app):
         tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
         
         # estado: feature["properties"]["name"]
-        data = base_beneficiarios_mun.copy()
-        data['MONTO_APOYO_TOTALsum'] = data['MONTO_APOYO_TOTALsum'].astype('float')
+        data = base_beneficiarios_ent_tprod.copy()
+        #data = data.dropna(axis=0)
+        data['monto_total'] = data['monto_total'].astype('float')
         # filtros
-        data = data[data['Anio'] == int(sel_anio)]
-        data = data[data['Producto'] == sel_producto]
-        data = data[data['GM_2020'].isin(margin)]
+        data = data[data['year'] == int(sel_anio)]
+        data = data[data['cultivo'] == sel_producto]
+        data = data[data['gm'].isin(margin)]
+        
         # filtro para tamaño de productor
-        if set(tproductor) == set(['Pequeño', 'Mediano']):
-            tproductor = ['Todos']
-            data = data[data['TAMPROD'].isin(tproductor)]
-        else:
-            data = data[data['TAMPROD'].isin(tproductor)]
+        # if set(tproductor) == set(['Pequeño', 'Mediano']) | set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        #     tproductor = ['Todos']
+        #     data = data[data['tipo'].isin(tproductor)]
+        # else:
+        data = data[data['tipo'].isin(tproductor)]
 
         # Condición
         if ('Beneficiarios' not in capas_sel) or len(margin)==0:
@@ -179,22 +191,22 @@ def get_card_poblacion_beneficiaria(app):
         else:
             if beneficiario == 'Número de Beneficiarios':
                 if not feature:
-                    result = np.round(np.sum(data['NUM_BENEFsize']),0)
+                    result = np.round(np.sum(data['benef_total']),0)
                 else:
                     # filtro de estado
-                    data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
+                    data_filt = data[data['cve_ent'] == feature["properties"]["id"]]
                     # Sin dato nombre de dato faltante
-                    result = np.round(np.sum(data_filt['NUM_BENEFsize']))
+                    result = np.round((data_filt['benef_total']))
 
                 return "{:,}".format(result)
             else:
                 if not feature:
-                    result = np.sum(data['MONTO_APOYO_TOTALsum'])
+                    result = np.sum(data['monto_total'])
                 else:
                     # filtro de estado
-                    data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
+                    data_filt = data[data['cve_ent'] == feature["properties"]["id"]]
                     # Sin dato nombre de dato faltante
-                    result = np.sum(data_filt['MONTO_APOYO_TOTALsum'].astype('float'))
+                    result =  np.round(data_filt['monto_total'])
 
                 return millify(result, precision=1)
 
@@ -220,32 +232,36 @@ def get_card_volumen_incentivado(app):
         # tamaño del productor
         tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
         
-        data = base_beneficiarios_mun.copy()
+        # estado: feature["properties"]["name"]
         # filtros
-        data = data[data['Anio'] == int(sel_anio)]
-        data = data[data['Producto'] == sel_producto]
-        data = data[data['GM_2020'].isin(margin)]
+        data = base_beneficiarios_mun_tprod.copy()
+        data['monto_total'] = data['monto_total'].astype('float')
+        # filtros
+        data = data[data['year'] == int(sel_anio)]
+        data = data[data['cultivo'] == sel_producto]
+        data = data[data['gm'].isin(margin)]
+        #data = data[data['tipo'].isin(tproductor)]
         # filtro para tamaño de productor
-        if set(tproductor) == set(['Pequeño', 'Mediano']):
-            tproductor = ['Todos']
-            data = data[data['TAMPROD'].isin(tproductor)]
-        else:
-            data = data[data['TAMPROD'].isin(tproductor)]
+        # if set(tproductor) == set(['Pequeño', 'Mediano']) | set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        #     tproductor = ['Pequeño', 'Mediano']
+        #     data = data[data['tipo'].isin(tproductor)]
+        # else:
+        data = data[data['tipo'].isin(tproductor)]
         # condición
         if ('Beneficiarios' not in capas_sel) or len(margin)==0:
             return '-'
         else:
             if not feature:
-                result = np.sum(data['VolumenIncentivadosum']) 
+                result = np.sum(data['volincentivado_total']) 
             else:
                 # filtro de estado
-                data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
+                data_filt = data[data['cve_ent'] == feature["properties"]["id"]]
                 # Sin dato nombre de dato faltante
-                result = np.sum(data_filt['VolumenIncentivadosum'])
+                result = np.sum(data_filt['volincentivado_total'])
                 
-            return millify(result, precision=1)
+        return millify(result, precision=1)
 
-
+# 
 def get_card_volumen_incentivado_promedio(app): 
     #########  CALL : Regresa Monto Volumen Incentivado Promedio  ################
     @app.callback(
@@ -265,30 +281,34 @@ def get_card_volumen_incentivado_promedio(app):
         # tamaño del productor
         tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
         
-        data = base_beneficiarios_mun.copy()
+        # estado: feature["properties"]["name"]
         # filtros
-        data = data[data['Anio'] == int(sel_anio)]
-        data = data[data['Producto'] == sel_producto]
-        data = data[data['GM_2020'].isin(margin)]
+        data = base_beneficiarios_mun_tprod.copy()
+        data['monto_total'] = data['monto_total'].astype('float')
+        # filtros
+        data = data[data['year'] == int(sel_anio)]
+        data = data[data['cultivo'] == sel_producto]
+        data = data[data['gm'].isin(margin)]
+        #data = data[data['tipo'].isin(tproductor)]
         # filtro para tamaño de productor
-        if set(tproductor) == set(['Pequeño', 'Mediano']):
-            tproductor = ['Todos']
-            data = data[data['TAMPROD'].isin(tproductor)]
-        else:
-            data = data[data['TAMPROD'].isin(tproductor)]
+        # if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
+        #     tproductor = ['Todos']
+        #     data = data[data['tipo'].isin(tproductor)]
+        # else:
+        data = data[data['tipo'].isin(tproductor)]
         # condición
         if ('Beneficiarios' not in capas_sel) or len(margin)==0:
             return '-'
         else:
             if not feature:
-                result = np.sum(data['VolumenIncentivadosum'])/np.sum(data['NUM_BENEFsize'])  
+                result = np.sum(data['volincentivado_total'])/np.sum(data['benef_total'])
+                return millify(result, precision=1)  
             else:
                 # filtro de estado
-                data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
+                data_filt = data[data['entidad'] == feature["properties"]["name"]]
                 # Sin dato nombre de dato faltante
-                if np.sum(data_filt['VolumenIncentivadosum']) == 0:
-                    result = 0
+                if np.sum(data_filt['volincentivado_total']) == 0:
+                    return 0
                 else:
-                    result = np.sum(data_filt['VolumenIncentivadosum'])/np.sum(data_filt['NUM_BENEFsize']) 
-                
-            return millify(result, precision=1)
+                    result = np.sum(data_filt['volincentivado_total'])/np.sum(data_filt['benef_total']) 
+                    return millify(result, precision=1)

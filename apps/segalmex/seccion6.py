@@ -451,12 +451,12 @@ seccion6 = html.Div([
                         #dl.Map(id="mapa1"),
                      ], id="mapa", style={"width": "100%", "height":'100%'}
                     ),   # style={'height':'100vh'}
-            ], className="card col-12 col-md-8", style={'padding':'.0rem', 'marginTop':'0rem', 'marginRight':'0rem', 'boxShadow': '#e3e3e3 0px 0px 0px', 'border-radius': '10px', 'backgroundColor': '#BFC9CA', }
+            ], className="card col-12 col-md-12 col-lg-12 col-xl-8", style={'padding':'.0rem', 'marginTop':'0rem', 'marginRight':'0rem', 'boxShadow': '#e3e3e3 0px 0px 0px', 'border-radius': '10px', 'backgroundColor': '#BFC9CA', }
             ),
             dbc.Col([
                 sidebar_right
 
-            ], className="card col-12 col-md-4", style={'padding':'.0rem', 'marginTop':'0rem', 'marginRight':'0rem', 'boxShadow': '#e3e3e3 0px 0px 0px', 'border-radius': '0px', 'backgroundColor': 'white', }
+            ], className="card col-12 col-md-12 col-lg-12 col-xl-4", style={'padding':'.0rem', 'marginTop':'0rem', 'marginRight':'0rem', 'boxShadow': '#e3e3e3 0px 0px 0px', 'border-radius': '0px', 'backgroundColor': 'white', }
             )
         ]),
         # Barra de control

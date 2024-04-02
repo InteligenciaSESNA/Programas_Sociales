@@ -47,7 +47,6 @@ from apps.segalmex import reglas_operacion
 ##################################################################
 
 # Esta sección contien información introductoria sobre el programa de precios de garantía
-
 seccion2 = html.Div([
     dbc.Row([
         dbc.Col([

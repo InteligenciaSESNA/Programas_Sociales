@@ -38,7 +38,7 @@ import json
 from costumFunctions import make_dataframe_state_mun
 import sys
 import pymysql
-
+import mysql.connector
 # import root
 from path import root
 # propiedades del mapa
@@ -56,8 +56,13 @@ from apps.segalmex.seccion3 import seccion3
 from apps.segalmex.seccion4 import seccion4
 from apps.segalmex.seccion5 import seccion5
 from apps.segalmex.seccion6 import seccion6
-
-
+# importa modulos de seccion 7
+from apps.segalmex.seccion7 import get_card_centros_acopio
+from apps.segalmex.seccion7 import get_card_poblacion_beneficiaria_img
+from apps.segalmex.seccion7 import get_card_poblacion_beneficiaria_texto
+from apps.segalmex.seccion7 import get_card_poblacion_beneficiaria
+from apps.segalmex.seccion7 import get_card_volumen_incentivado
+from apps.segalmex.seccion7 import get_card_volumen_incentivado_promedio
 
 
 
@@ -65,17 +70,38 @@ from apps.segalmex.seccion6 import seccion6
 
 #import plotly.io as pio
 #pio.renderers.default = 'firefox'
+user='root'
+password='astro123'
+host='localhost'
+database='psociales'
 
 
-# CONFIG BASE DATOS (No activo)
-#hostname="localhost"
-#dbname=["nombre bases separadas por comas"]
-#uname="root"
-#pwd="myadmin"
+# coneccion con MySQL
+conn= mysql.connector.connect(user=user, 
+                            password=password,
+                            host=host,
+                            database=database)
+cursor = conn.cursor()
+# consulta
+query = 'select * from productores_mun;'
+
+# base
+cursor.execute(query)
+# nombre de campos
+column_names = [i[0] for i in cursor.description]
+# lectura de base
+base = cursor.fetchall() 
+# dataframe
+base_productores = pd.DataFrame(base, columns=column_names)
+# cierre de la conección
+cursor.close()
+conn.close()
+# imprimimos primeras líneas
+
 
 # --- Only run on the server
-#engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}".format(host=hostname, db=dbname[0], user=uname, pw=pwd))
-#base = pd.read_sql(sql="select * from", con = engine, index_col="Date", parse_dates=True)
+#engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}/{database}")
+#base_productores = pd.read_sql(sql="select * from", con = engine)
 
 # introducir directorio de la carpeta
 #root = "C:/Users/jcmartinez/Desktop/Dashboard3"
@@ -85,52 +111,52 @@ from apps.segalmex.seccion6 import seccion6
 #estados_json = open(root + '/datasets/estadosMexico.json')
 #mx_est_geo = json.load(estados_json)
 json.load(open(root +'/datasets/sample3.json'))
-data2 = json.load(open(root +'/datasets/sample3.json'))
-# with open (root +'/datasets/sample3.json') as f:
-#   data2 = json.loads(f)
-# data2 = json.dumps(data2)
-# base completa
-# base_2019 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2019.xlsx')
-# base_2020 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2020.xlsx')
-# base_2021 = pd.read_excel(root + '/datasets/PBeneficiarios_data_2021.xlsx')
+#data2 = json.load(open(root +'/datasets/sample4.json'))
+data2 = json.load(open(root +'/datasets/geoVolProd.json'))
+#data3= json.load(open(root +'/datasets/sample5.json', "r", encoding="utf-8"))
 
-# url estados
-estados_urls = pd.read_excel(root + '/datasets/estados.xlsx')
-# bases Beneficiarios estado
-base_entidad = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
-#base_entidad_tprod = pd.read_excel(root + '/datasets/base_entidad_tprod.xlsx')
-# bases Beneficiarios Municipio
-base_municipios0 = pd.read_excel(root + '/datasets/base_municipio3.xlsx')
-base_municipios = pd.read_excel(root + '/datasets/base_municipio_tprod.xlsx')
-# base productores municipio
-#base_productores_filter = pd.read_excel(root + '/datasets/baseTotalproductores.xlsx')
-# bases de centros de acopio a nivel entidad y municipal
-centros_entidad = pd.read_excel(root + '/datasets/centros_entidad.xlsx')
-centros_municipio = pd.read_excel(root + '/datasets/centros_municipio2.xlsx')
-# base productores
-base_productores = pd.read_excel(root + '/datasets/TotalProductores2.xlsx')
-# base resumen introduccion
+# base lista de url's de todos los estados
+estados_urls = pd.read_excel(root + '/datasets/estados.xlsx', converters={'cve_ent':str})
+# base de beneficiarios por entidad
+#base_beneficiarios_ent = pd.read_excel(root + '/datasets/base_entidad.xlsx', converters={'cve_ent':str})
+cultivos_cambios = {'Trigo grano':'Trigo',
+                    'Maíz grano blanco':'Maíz',
+                    'Arroz':'Arroz',
+                    'Leche':'Leche',
+                    'Frijol':'Frijol'}
+
+# base de beneficiarios por entidad
+base_beneficiarios_ent_tprod = pd.read_excel(root + '/datasets/beneficiarios_ent.xlsx', converters={'cve_ent':str})
+base_beneficiarios_ent_tprod['cultivo'] = base_beneficiarios_ent_tprod['cultivo'].map(cultivos_cambios)
+base_beneficiarios_ent_tprod['tipo'] = [val.strip() for val in base_beneficiarios_ent_tprod['tipo']]
+
+# base de beneficiarios por municipios
+#base_beneficiarios_mun = pd.read_excel(root + '/datasets/base_municipio3.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+base_beneficiarios_mun_tprod = pd.read_excel(root + '/datasets/beneficiarios_mun.xlsx', converters={'cve_ent':str, 'cve_mun':str, 'year':int})
+base_beneficiarios_mun_tprod['tipo'] = [val.strip() for val in base_beneficiarios_mun_tprod['tipo']]
+
+# base centros de acopio por entidad
+base_centros_ent = pd.read_excel(root + '/datasets/centros_acopio_entidad.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+
+# base centros de acopio por municipio
+base_centros = pd.read_excel(root + '/datasets/centros_acopio.xlsx', converters={'cve_ent':str, 'cve_mun':str, 'cve_loc':str, 'latitud':float, 'longitud':float})
+base_centros = base_centros[~base_centros['cve_ent'].isna()]
+base_centros = base_centros[~base_centros['cve_mun'].isna()]
+base_centros = base_centros[~base_centros['cve_loc'].isna()]
+base_centros = base_centros[~base_centros['latitud'].isna()]
+base_centros = base_centros[~base_centros['longitud'].isna()]
+# base de productores 
+
+#base_productores = pd.read_excel(root + '/datasets/TotalProductores.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+#base_productores2 = pd.read_excel(root + '/datasets/TotalProductores2.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+#base_productores = pd.read_excel(root + '/datasets/TotalProductores3.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+
+# base resumen de montos
 base_resumen = pd.read_excel(root + '/datasets/resumen_montos.xlsx')
 
-# sample maps P
-# blue style
-# bstyle = "https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png"
-# # grey style
-# bstyle1 = 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png'
-# # black style
-# bstyle3 = 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
-# base centros de acopio
-#df_centros = pd.read_excel(root + '/datasets/base_centros_inegi.xlsx')
-#df_centros = df_centros
-
-# base producción agrícola
-#df_produccion = pd.read_excel(root + '/datasets/base_prodAgricola_con_claves_inegi.xlsx')
-#df_produccion = df_produccion.dropna()
-# georeferenciación de base producción - estados
-#df_prod_est = pd.read_csv(root + '/datasets/produccion_estados.csv')
 
 # Opciones
-list_year = ['2019', '2020', '2021']
+list_year = ['2019', '2020', '2021', '2022']
 list_products = ['Arroz', 'Frijol', 'Leche', 'Maíz', 'Trigo']
 list_grado_marginacion = [['Muy bajo', 'blue'],
                           ['Bajo','indigo'],
@@ -139,8 +165,8 @@ list_grado_marginacion = [['Muy bajo', 'blue'],
                           ['Muy alto', 'orange',
                            'No disponible', 'yellow']]
 
-list_tamano_productor = ['Pequeño', 'Mediano', 'Grande']
-list_states = base_entidad['NOM_ENT'].unique()
+list_tamano_productor = ['Pequeño', 'Mediano']
+list_states = base_beneficiarios_ent_tprod['cve_ent'].unique()
 list_layers = ['Centros de Acopio','Volumen Producción','Productores','All']
 list_beneficiarios_opciones = ['Monto del Apoyo', 'Número de Beneficiarios']
 
@@ -170,222 +196,64 @@ list_capas_marginacion = initial_values = [
 
 list_criterios = ['Marginación', 'Precio']
 
-####  Propiedades del MAPA
-# classes = [0, 1000,3000,5000,10000, 100000, 1000000, 3000000] #   #FF7F50
-# colorscale = ['#ffffe5','#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#005a32'] # '#0B5345'
-# # fillcolor : color de relleno de cada estado  
-# style2 = dict(weight=1, opacity=0.9, fillColor='#D4E6F1', color='white', dashArray='1', fillOpacity=0.9)
-# # fillOpacity : transparencia de color de relleno
-# style = dict(weight=1, opacity=0.9, fillColor='#f5cba7', color='white', dashArray='1', fillOpacity=0.9)
-# # estilo centros de acopio
-# #  color: color de fondo
-# style0 = dict(weight=1, opacity=0.9 ,color='#EBF5FB', dashArray='1', fillOpacity=0.9)
-# # Create colorbar.
-# ctg = ["{}+".format(millify(cls), classes[i + 1]) for i, cls in enumerate(classes[:-1])] + ["{}+".format(millify(classes[-1]))]
-# colorbar = dlx.categorical_colorbar(categories=ctg, colorscale=colorscale, width=300, height=30, position="bottomleft", unit='/Ton')
-# # Geojson rendering logic, must be JavaScript as it is executed in clientside
-# style_handle = assign("""function(feature, context){
-#     const {classes, colorscale, style, colorProp} = context.props.hideout;  // get props from hideout
-#     const value = feature.properties[colorProp];  // get value the determines the color
-    
-#     for (let i = 0; i < classes.length; ++i) {
-#         if (value > classes[i]) {
-#             style.fillColor = colorscale[i];  // set the fill color according to the class
-#         }
-#     }
-#     return style;
-# }""")
-
-# change color to click on state
-
-# style_handle2 = assign("""function(feature, context){
-#     const match = context.props.hideout &&  context.props.hideout.properties.name === feature.properties.name;
-#     if(match) return {weight:1, fillColor:'#4e203a', color:'white', opacity:0.9 fillOpacity=0.9, dashArray:'1'};
-# }""")
-
-# app.clientside_callback("function(feature){return feature}", 
-#                         Output("states", "hideout"), 
-#                         [Input("states", "click_feature")])
-
-# # Information
-# info = html.Div(children=get_info(), id="info", className="info",
-#                 style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
-
-# #info2 = html.Div(children=get_info2(), id="info2", className="info2",
-# #                style={"position": "absolute", "top": "10px", "right": "10px", "z-index": "1000"})
-
-# # muestra la simbología de grados de marginación 
-# info_grado_marginacion = html.Div([
-#     dbc.Row(dmc.Text("Grado de marginación:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-#     dbc.Row([
-#         dbc.Col(dmc.Text([DashIconify(icon="bi:circle-fill", width=18, color='#084594', height=18), " Muy alto  ", " ",
-#                           DashIconify(icon="bi:circle-fill", width=18, color='#2171b5', height=18), " Alto  ", " ",
-#                           DashIconify(icon="bi:circle-fill", width=18, color='#4292c6', height=18), " Medio  ", " ",
-#                           DashIconify(icon="bi:circle-fill", width=18, color='#6baed6', height=18), " Bajo  ", " ",
-#                           DashIconify(icon="bi:circle-fill", width=18, color='#9ecae1', height=18), " Muy bajo  "], size=10, )),
-#        ], style={'marginBottom':'6px'}),
-#     #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-# ], style={'opacity':'0.9', "position": "absolute", "bottom": "88px", "left": "10px", "z-index": "2000"})
-
-# info_num_benef = html.Div([
-#     dbc.Row(dmc.Text("Núm. Beneficiarios/Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-#     dbc.Row([
-#         dbc.Col(dmc.Text(["Menor ", 
-#                           DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
-#                           DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
-#        ], style={'marginBottom':'6px'}),
-#     #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-# ], style={'opacity':'0.9', "position": "absolute", "bottom": "140px", "left": "10px", "z-index": "2000"})
-
-
-# # título del volumen de producción
-# info_vol_prod = html.Div([
-#     dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=12, color='#4e203a', style={'marginTop':'3px'})),
-# ], style={'opacity':'0.9', "position": "absolute", "bottom": "63px", "left": "10px", "z-index": "2000"})
-
-
-# # descripción de escenarios 
-# info_escenarios_marginacion = html.Div([
-#     dbc.Row(dmc.Text("Beneficiarios:",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-#     dbc.Row([
-#         dbc.Col(dmc.Text([DashIconify(icon="akar-icons:circle", width=18, color='#1a5276', height=18), "Observados", " ",
-#                           DashIconify(icon="akar-icons:circle", width=18, color='#ee2a16', height=18), "Hipotéticos", " "], size=10)),
-#        ], style={'marginBottom':'6px', 'paddingBottom':'1rem'}),
-#     dbc.Row(dmc.Text("Monto del Apoyo:  ",weight=600, size=12, color='#4e203a', style={'marginBottom':'2px'})),
-#     dbc.Row([
-#         dbc.Col(dmc.Text(["Menor ", 
-#                           DashIconify(icon="mdi:code-less-than", width=14, color='black', height=14),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=2, color='black', height=2),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=4, color='black', height=4),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=6, color='black', height=6),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=8, color='black', height=8),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=10, color='black', height=10),  " ",
-#                           DashIconify(icon="bi:circle-fill", width=14, color='black', height=14),  " ",
-#                           DashIconify(icon="mdi:code-greater-than", width=14, color='black', height=14), " Mayor  "], size=10, )),
-#        ], style={'marginBottom':'6px'}),
-#     #dbc.Row(dmc.Text("Volumen de producción (Ton/Lts): ",weight=600, size=14, color='#4e203a', style={'marginTop':'3px'})),
-# ], style={'opacity':'0.9', "position": "absolute", "bottom": "20px", "left": "10px", "z-index": "2000"})
-
-# # información sobre los productores
-# info_productores = html.Div([
-#     dbc.Row(dmc.Text("(*) Productores se encuentran en escala logarítmica",weight=600, size=10, color='#4e203a', style={'marginTop':'3px'})),
-# ], style={'opacity':'0.9', "position": "absolute", "bottom": "18px", "right": "50px", "z-index": "2000"})
-
-
-
 
 
 # Callback
-@app.callback(Output("section3-content", "children"), 
-              Input("tabs-example", "value"))
-def render_content(active):
+# @app.callback(Output("section3-content", "children"), 
+#               Input("tabs-example", "value"))
+# def render_content(active):
     
-    base = base_resumen.copy()
-    # filtro de año
-    anio = int(active)
-    #
-    monto_active = barplot1(base, anio)
+#     base = base_resumen.copy()
+#     # filtro de año
+#     anio = int(active)
+#     #
+#     monto_active = barplot1(base, anio)
     
-    if active == "2019":
-        result = dbc.Row([
-                    dbc.Col([
-                        dmc.Text("En el año 2019, se destinó un aproximado de $ 8 billones al programa de Precios de Garantía a Productos Alimentarios Básicos, cuyos destinatarios serían los productores de cinco productos: maíz, trigo, frijol, leche y arroz. Para el caso de maíz se destinó un monto de $ 4 billones, lo que representó aproximadamente el 53.1% del total y, en segundo lugar, la cantidad de $2 billones (28.4% del total) fue designada a los productores de trigo.", size=18, color='#797D7F', align="justify"),
-                        dmc.Space(h=20),
-                        dmc.Text("Los productores de frijol y leche recibieron un monto de $ 695 millones (8.6%) y $ 534 millones (6.6%), respectivamente. Por último, a los productores de arroz se destinó $ 260 millones, equivalente a 3.2% del monto total.", size=18, color='#797D7F', align="justify"),
-                    ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
-                    dbc.Col([
-                        html.Div([
-                            dcc.Graph(figure=monto_active)    
-                        ])
-                    ], className='col-lg-6 col-12', style={'padding':'1rem'})
-                ], className='col-12', align="center", style={'padding':'1rem'})
-    elif active == "2020":
-        result = dbc.Row([
-                    dbc.Col([
-                        dmc.Text("En el año 2020, se destinó un aproximado de $ 9.5 billones al programa de Precios de Garantía a Productos Alimentarios Básicos, lo que representa un aumento del 18.2% en comparación con el monto destinado en 2019. Los productores de maíz recibieron $ 6.7 billones del total del monto de 2020 (70.9% del total).", size=18, color='grey', align="justify"),
-                        dmc.Space(h=20),
-                        dmc.Text("Por su parte, a los productores de trigo se destinó $1 billón (13.3% de total), para el caso de los productores de leche, se destinó un monto de $ 1 billón, correspondiente al 10.9% del total. En cuarto lugar, se encuentra el arroz, producto que recibió en 2020 $ 353 millones (3.7% del monto total del año respectivo). Finalmente, el frijol recibió un monto de apoyo de $ 117 millones, es decir, un 1.23% del monto total destinado al programa en 2020.", size=18, color='grey', align="justify"),
-                    ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
-                   dbc.Col([
-                        html.Div([
-                            dcc.Graph(figure=monto_active)    
-                        ])
-                    ], className='col-lg-6 col-12', style={'padding':'1rem'})
-                ], className='col-12', align="center", style={'padding':'1rem'})
-    elif active == "2021":
-        result = dbc.Row([
-                    dbc.Col([
-                        dmc.Text("En el año 2021, se destinó un aproximado de $ 6.8 billones al Programa Precios de Garantía a Productos Alimentarios Básicos lo que representa una disminución del 27.7% en comparación con el monto destinado en 2020. Para el caso de maíz se otorgaron $4 billones, lo que representó aproximadamente el 60.4% del total.", size=18, color='grey', align="justify"),
-                        dmc.Space(h=20),
-                        dmc.Text("Respecto al frijol, se destinó $1.6 billones, lo que representa el 22.9% del total del monto destinado en 2021 al programa. Los productores de leche recibieron $ 523 millones, correspondiente al 7.5% del total. En cuarto lugar, se encuentra el trigo, producto que recibió en 2021 $ 424 millones (6.1% del monto total del año respectivo). Finalmente, el arroz recibió un monto de apoyo de $ 202 millones, es decir, un 2.9% del monto total destinado al programa en 2020.", size=18, color='grey', align="justify"),
-                    ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
+#     if active == "2019":
+#         result = dbc.Row([
+#                     dbc.Col([
+#                         dmc.Text("En el año 2019, se destinó un aproximado de $ 8 billones al programa de Precios de Garantía a Productos Alimentarios Básicos, cuyos destinatarios serían los productores de cinco productos: maíz, trigo, frijol, leche y arroz. Para el caso de maíz se destinó un monto de $ 4 billones, lo que representó aproximadamente el 53.1% del total y, en segundo lugar, la cantidad de $2 billones (28.4% del total) fue designada a los productores de trigo.", size=18, color='#797D7F', align="justify"),
+#                         dmc.Space(h=20),
+#                         dmc.Text("Los productores de frijol y leche recibieron un monto de $ 695 millones (8.6%) y $ 534 millones (6.6%), respectivamente. Por último, a los productores de arroz se destinó $ 260 millones, equivalente a 3.2% del monto total.", size=18, color='#797D7F', align="justify"),
+#                     ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
+#                     dbc.Col([
+#                         html.Div([
+#                             dcc.Graph(figure=monto_active, animate=True)    
+#                         ])
+#                     ], className='col-lg-6 col-12', style={'padding':'1rem'})
+#                 ], className='col-12', align="center", style={'padding':'1rem'})
+#     elif active == "2020":
+#         result = dbc.Row([
+#                     dbc.Col([
+#                         dmc.Text("En el año 2020, se destinó un aproximado de $ 9.5 billones al programa de Precios de Garantía a Productos Alimentarios Básicos, lo que representa un aumento del 18.2% en comparación con el monto destinado en 2019. Los productores de maíz recibieron $ 6.7 billones del total del monto de 2020 (70.9% del total).", size=18, color='grey', align="justify"),
+#                         dmc.Space(h=20),
+#                         dmc.Text("Por su parte, a los productores de trigo se destinó $1 billón (13.3% de total), para el caso de los productores de leche, se destinó un monto de $ 1 billón, correspondiente al 10.9% del total. En cuarto lugar, se encuentra el arroz, producto que recibió en 2020 $ 353 millones (3.7% del monto total del año respectivo). Finalmente, el frijol recibió un monto de apoyo de $ 117 millones, es decir, un 1.23% del monto total destinado al programa en 2020.", size=18, color='grey', align="justify"),
+#                     ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
+#                    dbc.Col([
+#                         html.Div([
+#                             dcc.Graph(figure=monto_active)    
+#                         ])
+#                     ], className='col-lg-6 col-12', style={'padding':'1rem'})
+#                 ], className='col-12', align="center", style={'padding':'1rem'})
+#     elif active == "2021":
+#         result = dbc.Row([
+#                     dbc.Col([
+#                         dmc.Text("En el año 2021, se destinó un aproximado de $ 6.8 billones al Programa Precios de Garantía a Productos Alimentarios Básicos lo que representa una disminución del 27.7% en comparación con el monto destinado en 2020. Para el caso de maíz se otorgaron $4 billones, lo que representó aproximadamente el 60.4% del total.", size=18, color='grey', align="justify"),
+#                         dmc.Space(h=20),
+#                         dmc.Text("Respecto al frijol, se destinó $1.6 billones, lo que representa el 22.9% del total del monto destinado en 2021 al programa. Los productores de leche recibieron $ 523 millones, correspondiente al 7.5% del total. En cuarto lugar, se encuentra el trigo, producto que recibió en 2021 $ 424 millones (6.1% del monto total del año respectivo). Finalmente, el arroz recibió un monto de apoyo de $ 202 millones, es decir, un 2.9% del monto total destinado al programa en 2020.", size=18, color='grey', align="justify"),
+#                     ], className='card col-lg-6 col-12', style={'padding':'2rem', 'backgroundColor':'#fdfefe', 'border-radius': '5px', 'border-right': '2px solid #f8f9f9', 'border-left': '1px solid #f8f9f9', 'border-top': '1px solid #f8f9f9', 'border-bottom': '2px solid #f8f9f9'}),
                     
-                    dbc.Col([
-                        html.Div([
-                            dcc.Graph(figure=monto_active)    
-                        ])
-                    ], className='col-lg-6 col-12', style={'padding':'1rem'})
-                ], className='col-12', align="center", style={'display':'flex','padding':'1rem'})
+#                     dbc.Col([
+#                         html.Div([
+#                             dcc.Graph(figure=monto_active)    
+#                         ])
+#                     ], className='col-lg-6 col-12', style={'padding':'1rem'})
+#                 ], className='col-12', align="center", style={'display':'flex','padding':'1rem'})
 
-    else:
-        result = dmc.Text('No action!')
+#     else:
+#         result = dmc.Text('No action!')
         
-    return result
-
-
-
-#####
-# seccion3_1 = html.Div([
-#     ####### SECCION : PIE PLOT
-#     dmc.Card([
-#         dmc.CardSection(
-#             dmc.Group(
-#                 children=[
-#                     dmc.Text("Review Pictures", weight=500),
-#                     dmc.ActionIcon(
-#                         DashIconify(icon="carbon:overflow-menu-horizontal"),
-#                         color="gray",
-#                         variant="transparent",
-#                     ),
-#                 ],
-#                 position="apart",
-#             ),
-#             withBorder=True,
-#             inheritPadding=True,
-#             py="xs",
-#         ),
-#         dmc.Text(
-#             children=[
-#                 dmc.Text(
-#                     "200+ images uploaded",
-#                     color="blue",
-#                     style={"display": "inline"},
-#                 ),
-#                 " since last visit, review them to select which one should be added to your gallery",
-#             ],
-#             mt="sm",
-#             color="dimmed",
-#             size="sm",
-#         ),
-#         dmc.CardSection(
-#             html.Iframe(id='pie-plot1', srcDoc=open(root + "/graficos/piePlot_2020.html", 'r', encoding = 'utf-8').read(), style={"height": "350px", "width": "1200px"}),
-#         ),
-#     ],
-#     withBorder=True,
-#     style={'backgroundColor':'white', 'marginTop':'4rem', 'marginBottom':'2rem'}
-#     ),
-# ], className="flip-card-front", style={'paddingLeft':'2rem', 'paddingRight':'2rem','backgroundColor':'white', 'm':'0px', 'padding':'0px'})
-        
-
-
-
-
+#     return result
 
 
 
@@ -592,7 +460,640 @@ def render_content(active):
     
 # ],style={"paddin": '0rem', 'marginLeft':'2rem', 'marginRight':'2rem'})
 
+################################################################
+#                         Graficos
+################################################################
+def plot1():
+    fig = go.Figure()
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    #fig = go.Figure([])
 
+    # frontera eficiente
+    fig.add_trace(go.Bar(
+        x=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'], 
+        y=[20, 14, 23, 20, 14, 23, 21, 15, 24, 14, 23, 21, 14, 23, 21,  21, 15, 24, 14, 23, 21],
+        #name='Monto',
+        width=0.85), secondary_y=False)
+
+    # fig.add_trace(go.Scatter(
+    #     x=df['Producto'].to_list(),
+    #     y=df['Acumulado2'].to_list(),
+    #     mode="lines+markers+text",
+    #     textfont=dict(color='#cb4335'),
+    #     line_color='#cb4335',
+    #     marker=dict(color='#cb4335'),
+    #     name='% acumulado',
+    #     text= [str(np.round(val,0))+'%' for val in df['Acumulado2'].to_list()],
+    #     textposition="bottom center"), secondary_y=True)
+
+    fig.update_layout(
+        showlegend=False,
+        autosize=True,
+        #width=650,
+        height=200,
+        margin=dict(
+            l=0,
+            r=0,
+            b=0,
+            t=20,
+            pad=0),
+            plot_bgcolor='white',
+            paper_bgcolor="white",
+            )
+
+
+    fig.update_layout(
+        title="",
+        xaxis_title="Producto",
+        yaxis_title="Monto del Apoyo ($)",
+        legend_title="",
+        font=dict(
+            #family="Courier New, monospace",
+            size=12,
+            color="#2a3240"
+            ))
+
+    fig.update_traces(marker_color='#4e203a', marker_line_color='#4e203a',
+                    marker_line_width=1, opacity=1)
+
+    # Set y-axes titles
+    # fig.update_yaxes(
+    #     title_text="<b>Monto del Apoyo ($)</b>", 
+    #     secondary_y=False)
+    # fig.update_yaxes(
+    #     title_text="<b>Porcentaje acumulado (%)</b>", 
+    #     secondary_y=True)
+    # drop grids
+    fig.update_xaxes(showgrid=False)
+    fig.update_yaxes(showgrid=False)
+    
+    #fig.update_layout(title_text='Monto de apoyos por producto', title_x=0.5)
+    #fig.update_layout(hovermode="y")
+    fig.update_layout(showlegend=False)
+    
+    return fig
+
+seccion8 = html.Div([
+    # first row
+    dmc.Grid(children=[
+       dmc.Col(
+               html.Div(
+                dmc.SimpleGrid(cols=1, spacing="lg", children=[
+                    dmc.Card(
+                        children=[
+                            dmc.CardSection(
+                                dmc.Group(
+                                    children=[
+                                        #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                                        # dmc.ActionIcon(
+                                        #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                        #     color="gray",
+                                        #     variant="transparent",
+                                        # ),
+                                    ],
+                                    position="apart",
+                                ),
+                                withBorder=True,
+                                inheritPadding=False,
+                                py="xs",
+                                style={'padding':'0.2rem','backgroundColor':'#566573'}
+                            ),
+                            dmc.Text(
+                                children=[
+                                    dmc.Text(" Monto de apoyos por producto", weight=500, color='black', align='center', size=22),
+                                    dmc.Text(
+                                        "200+ images uploaded",
+                                        color="blue",
+                                        style={"display": "inline"},
+                                    ),
+                                    " since last visit, review them to select which one should be added to your gallery",
+                                ],
+                                mt="sm",
+                                color="dimmed",
+                                size="sm",
+                            ),
+                            dmc.CardSection(
+                                dcc.Graph(id='boxplot_ent', config={'displayModeBar':False})
+                                
+                            ),
+                            dmc.CardSection(
+                                dmc.Group(
+                                    children=[
+                                        #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                                        # dmc.ActionIcon(
+                                        #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                        #     color="gray",
+                                        #     variant="transparent",
+                                        # ),
+                                    ],
+                                    position="apart",
+                                ),
+                                withBorder=True,
+                                inheritPadding=False,
+                                py="xs",
+                                style={'padding':'0.2rem','backgroundColor':'#566573'}
+                            ),
+                            
+                        ],
+                        withBorder=True,
+                        shadow="sm",
+                        radius="md",
+                        style={"width": '100%', 'height':'25rem'},
+                    ),
+                    dmc.Card(
+                        children=[
+                            dmc.CardSection(
+                                dmc.Group(
+                                    children=[
+                                        #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                                        # dmc.ActionIcon(
+                                        #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                        #     color="gray",
+                                        #     variant="transparent",
+                                        # ),
+                                    ],
+                                    position="apart",
+                                ),
+                                withBorder=True,
+                                inheritPadding=False,
+                                py="xs",
+                                style={'padding':'0.2rem','backgroundColor':'#566573'}
+                            ),
+                            dmc.Text(
+                                children=[
+                                    dmc.Text(" Monto de apoyos por producto", weight=500, color='black', align='center', size=22),
+                                    dmc.Text(
+                                        "200+ images uploaded",
+                                        color="blue",
+                                        style={"display": "inline"},
+                                    ),
+                                    " since last visit, review them to select which one should be added to your gallery",
+                                ],
+                                mt="sm",
+                                color="dimmed",
+                                size="sm",
+                            ),
+                            dmc.CardSection(
+                                dcc.Graph(id='barplot_ent', config={'displayModeBar':False})
+                                
+                            ),
+                            dmc.CardSection(
+                                dmc.Group(
+                                    children=[
+                                        #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                                        # dmc.ActionIcon(
+                                        #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                        #     color="gray",
+                                        #     variant="transparent",
+                                        # ),
+                                    ],
+                                    position="apart",
+                                ),
+                                withBorder=True,
+                                inheritPadding=False,
+                                py="xs",
+                                style={'padding':'0.2rem','backgroundColor':'#566573'}
+                            ),
+                            
+                        ],
+                        withBorder=True,
+                        shadow="sm",
+                        radius="md",
+                        style={"width": '100%', 'height':'25rem'},
+                    ),
+                    #
+                ], style={'marginBottom':'1.5rem'}),    
+               ), span=8),
+       dmc.Col(
+           html.Div(
+                dmc.Card(
+                    children=[
+                        dmc.CardSection(
+                            dmc.Group(
+                                children=[
+                                    dmc.Text(" Monto de apoyos por producto", weight=500, color='white'),
+                                    dmc.ActionIcon(
+                                        DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                        color="gray",
+                                        variant="transparent",
+                                    ),
+                                ],
+                                position="apart",
+                            ),
+                            withBorder=True,
+                            inheritPadding=False,
+                            py="xs",
+                            style={'padding':'0.3rem','backgroundColor':'#566573'}
+                        ),
+                        dmc.Text(
+                            children=[
+                                dmc.Text(
+                                    "200+ images uploaded",
+                                    color="blue",
+                                    style={"display": "inline"},
+                                ),
+                                " since last visit, review them to select which one should be added to your gallery",
+                            ],
+                            mt="sm",
+                            color="dimmed",
+                            size="sm",
+                        ),
+                        dmc.CardSection(
+                            dcc.Graph(id='table_ent', config={'displayModeBar':False}, style={"overflow": "scroll"})
+                            
+                        ),
+                        dmc.CardSection(
+                            dmc.Group(
+                                children=[
+                                    #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                                    # dmc.ActionIcon(
+                                    #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                    #     color="gray",
+                                    #     variant="transparent",
+                                    # ),
+                                ],
+                                position="apart",
+                            ),
+                            withBorder=True,
+                            inheritPadding=False,
+                            py="xs",
+                            style={'padding':'0.2rem','backgroundColor':'#566573'}
+                        ),
+                        
+                    ],
+                    withBorder=True,
+                    shadow="sm",
+                    radius="md",
+                    style={"width": '100%', 'height':'35rem'},
+                ),
+           ), style={'paddingRight':'0rem'}, span=4), 
+    ]),
+    
+    # second row 
+    dmc.SimpleGrid(cols=3, spacing="lg", children=[
+        # card 1
+        dmc.Card(
+            children=[
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            dmc.Text(" Monto de apoyos por producto", weight=500, color='white'),
+                            dmc.ActionIcon(
+                                DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                color="gray",
+                                variant="transparent",
+                            ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.3rem','backgroundColor':'#566573'}
+                ),
+                dmc.Text(
+                    children=[
+                        dmc.Text(
+                            "200+ images uploaded",
+                            color="blue",
+                            style={"display": "inline"},
+                        ),
+                        " since last visit, review them to select which one should be added to your gallery",
+                    ],
+                    mt="sm",
+                    color="dimmed",
+                    size="sm",
+                ),
+                dmc.CardSection(
+                    dcc.Graph(id='plot1', config={'displayModeBar':False})
+                    
+                ),
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            # dmc.ActionIcon(
+                            #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                            #     color="gray",
+                            #     variant="transparent",
+                            # ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.2rem','backgroundColor':'#566573'}
+                ),
+                
+            ],
+            withBorder=True,
+            shadow="sm",
+            radius="md",
+            style={"width": '100%'},
+        ),
+        # card 2 
+        dmc.Card(
+            children=[
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            dmc.ActionIcon(
+                                DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                color="gray",
+                                variant="transparent",
+                            ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.3rem','backgroundColor':'#DC7633'}
+                ),
+                dmc.Text(
+                    children=[
+                        dmc.Text(
+                            "200+ images uploaded",
+                            color="blue",
+                            style={"display": "inline"},
+                        ),
+                        " since last visit, review them to select which one should be added to your gallery",
+                    ],
+                    mt="sm",
+                    color="dimmed",
+                    size="sm",
+                ),
+                dmc.CardSection(
+                    dcc.Graph(id='plot2', config={'displayModeBar':False})
+                ),
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            # dmc.ActionIcon(
+                            #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                            #     color="gray",
+                            #     variant="transparent",
+                            # ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.2rem','backgroundColor':'#DC7633'}
+                ),
+                
+            ],
+            withBorder=True,
+            shadow="sm",
+            radius="md",
+            style={"width": '100%'}
+        ),
+        # card 3 
+        dmc.Card(
+            children=[
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            dmc.ActionIcon(
+                                DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                color="gray",
+                                variant="transparent",
+                            ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.3rem','backgroundColor':'#DC7633'}
+                ),
+                dmc.Text(
+                    children=[
+                        dmc.Text(
+                            "200+ images uploaded",
+                            color="blue",
+                            style={"display": "inline"},
+                        ),
+                        " since last visit, review them to select which one should be added to your gallery",
+                    ],
+                    mt="sm",
+                    color="dimmed",
+                    size="sm",
+                ),
+                dmc.CardSection(
+                    dcc.Graph(id='plot3', config={'displayModeBar':False})
+                ),
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            # dmc.ActionIcon(
+                            #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                            #     color="gray",
+                            #     variant="transparent",
+                            # ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.2rem','backgroundColor':'#DC7633'}
+                ),
+                
+            ],
+            withBorder=True,
+            shadow="sm",
+            radius="md",
+            style={"width": '100%'}
+        ),
+        
+        
+    ], style={'marginBottom':'1.5rem'}),
+    
+    dmc.SimpleGrid(cols=2, spacing="lg", children=[
+        # card 1
+        dmc.Card(
+            children=[
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            dmc.ActionIcon(
+                                DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                color="gray",
+                                variant="transparent",
+                            ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.3rem','backgroundColor':'#DC7633'}
+                ),
+                dmc.Text(
+                    children=[
+                        dmc.Text(" Monto de apoyos por producto", weight=500, color='white'),
+                        dmc.Text(
+                            "200+ images uploaded",
+                            color="blue",
+                            style={"display": "inline"},
+                        ),
+                        " since last visit, review them to select which one should be added to your gallery",
+                    ],
+                    mt="sm",
+                    color="dimmed",
+                    size="sm",
+                ),
+                dmc.CardSection(
+                    dcc.Graph(id='plot1',figure=plot1(), config={'displayModeBar':False})
+                    
+                ),
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            # dmc.ActionIcon(
+                            #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                            #     color="gray",
+                            #     variant="transparent",
+                            # ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.2rem','backgroundColor':'#DC7633'}
+                ),
+                
+            ],
+            withBorder=True,
+            shadow="sm",
+            radius="md",
+            style={"width": '100%'},
+        ),
+        # card 2 
+        dmc.Card(
+            children=[
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            dmc.ActionIcon(
+                                DashIconify(icon="carbon:overflow-menu-horizontal"),
+                                color="gray",
+                                variant="transparent",
+                            ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.3rem','backgroundColor':'#DC7633'}
+                ),
+                dmc.Text(
+                    children=[
+                        dmc.Text(
+                            "200+ images uploaded",
+                            color="blue",
+                            style={"display": "inline"},
+                        ),
+                        " since last visit, review them to select which one should be added to your gallery",
+                    ],
+                    mt="sm",
+                    color="dimmed",
+                    size="sm",
+                ),
+                dmc.CardSection(
+                    dcc.Graph(id='plot2', figure=plot1(), config={'displayModeBar':False})
+                ),
+                dmc.CardSection(
+                    dmc.Group(
+                        children=[
+                            #dmc.Text("Monto de apoyos por producto", weight=500, color='white'),
+                            # dmc.ActionIcon(
+                            #     DashIconify(icon="carbon:overflow-menu-horizontal"),
+                            #     color="gray",
+                            #     variant="transparent",
+                            # ),
+                        ],
+                        position="apart",
+                    ),
+                    withBorder=True,
+                    inheritPadding=False,
+                    py="xs",
+                    style={'padding':'0.2rem','backgroundColor':'#DC7633'}
+                ),
+                
+            ],
+            withBorder=True,
+            shadow="sm",
+            radius="md",
+            style={"width": '100%'},
+        ),
+        
+    ]),    
+], style={'padding':'2rem'})
+
+
+
+seccion1_1 = html.Div([
+    dmc.Card(children=[
+     dmc.Text(
+            "¿Cómo se vería la recepción de beneficios del programa si la entrega se hubiera basado en los precios muy bajos de mercado del producto agrícola a los que se enfrenta el productor?",
+            size="sm",
+            color="white",
+        ),   
+    ], style={'backgroundColor':'#909497', 'marginBottom':'1rem'}),
+    
+    dmc.Grid(
+        children=[
+            dmc.Col(
+                dmc.Card(children=[
+                    dmc.Text(
+                            "211",
+                            size=30,
+                            color="white",
+                        ),   
+                ], style={'backgroundColor':'#A2D9CE'}), span=3),
+            dmc.Col(
+                dmc.Card(children=[
+                    dmc.Text(
+                            "Personas beneficiadas realmente, que se tendría que enfrentar a la peor la situación en caso de no poder acceder al programa.",
+                            size="xs",
+                            color="black",
+                        ),   
+                ], style={'backgroundColor':'#A2D9CE'}), span=9),
+
+    ]),
+    dmc.Grid(
+        children=[
+            dmc.Col(
+                dmc.Card(children=[
+                    dmc.Text(
+                            "824",
+                            size=30,
+                            color="white",
+                        ),   
+                ], style={'backgroundColor':'#F8C471 '}), span=3),
+            dmc.Col(
+                dmc.Card(children=[
+                    dmc.Text(
+                            "Población beneficiada hipotéticamente, que vive en lugares con alta y  muy alta marginación.",
+                            size="xs",
+                            color="black",
+                        ),   
+                ], style={'backgroundColor':'#F8C471 '}), span=9),
+
+    ]),
+])
 
 # original 'backgroundColor': '#f2f2f2'
 ########################### layout  SEGALMEX
@@ -617,26 +1118,8 @@ layout = dbc.Container([
         seccion4,
         # Mapa
         seccion6,
-
-        #####  SECCIÓN:  BARRA INDICADOR ESTADOS
-        # dmc.Card([
-        #     dbc.Row([
-        #     #dbc.Col("", style={'marginLeft':'8px'}),
-        #     dbc.Col(get_info2(), id="info2", md=4),
-        #     dbc.Col([dbc.Row(dmc.Text('Año', id='anio_fijo', align="center")), dbc.Row(dmc.Text('2020', id='anio_filtro', align="center", weight=700))], style={'fontSize':40, 'marginTop':'1.2rem'}),
-        #     dbc.Col([dbc.Row(dmc.Text('Producto', id='producto_fijo', align="center")), dbc.Row(dmc.Text('Arroz', id='producto_filtro', align="center", weight=700))], style={'fontSize':40, 'marginTop':'1.2rem'}),
-        #     ]),
-        # ],
-        # withBorder=True,
-        # shadow="sm",
-        # radius="md",
-        # style={'marginLeft':'1rem','marginRight':'1rem','backgroundColor': '#F4F6F6'}
-        # ),
-
-    
         
         #### SECCIÓN : GRAFICOS
-        #content2,
         # final break
         dbc.Row([
             dbc.Col([
@@ -674,7 +1157,6 @@ layout = dbc.Container([
 #         state = feature["properties"]["name"]
 
 #     return state
-
 #########      CALL : Regresa año  ################
 @app.callback(# 'click_feature
         Output('anio_filtro2', 'children'),
@@ -684,6 +1166,7 @@ layout = dbc.Container([
         State('producto', 'value'),
         State('anio', 'value')
     )
+
 def anio(clicks, sel_producto, sel_anio):
 
 
@@ -760,311 +1243,20 @@ def toggle_fade(n, is_in):
         return False
     return not is_in
 
-#########      CALL : Cuenta centros de acopio  ################
-@app.callback(# 'click_feature
-        Output('resumen-centros_acopio', 'children'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        Input("transfer-list-simple", "value"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
 
-def resumen_centros_acopio(clicks, feature, transfer_sel, sel_producto, sel_anio):
-
-    # Nota:
-    # existe un municipio sin grado de marginación 
-    # únicamente se mostraran los 5 grados de marginación 
-    # capas
-    capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
-    # grado de marginación
-    margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-    # tamaño del productor
-    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
-    
-    # estado: feature["properties"]["name"]
-    data = centros_municipio.copy()
-    data = data[data['GM_2020'].isin(margin)]
-    #data = data[data['TAMPROD'].isin(tproductor)]
-    # condición
-    if ('Centros de Acopio' not in capas_sel) or len(margin)==0:
-        return '-'
-    else:
-        if not feature:
-            result = np.sum(data['NUM_CENTROS'])  
-        else:
-            # filtro de estado
-            data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-            # Sin dato nombre de dato faltante
-            result = np.sum(data_filt['NUM_CENTROS'])
-            
-        res = "{:,}".format(result)
-
-    return res
-    
-    
-    
-#########   CALL : Imagen Población beneficiaria / Monto Apoyo  ################
-@app.callback(# 'click_feature
-        Output('image-poblacion_beneficiaria', 'src'),
-        Input('beneficiarios-opciones', 'value'),
-    )
-def resumen_benef_textImage(beneficiarios):
-
-    # condición
-    if beneficiarios == 'Número de Beneficiarios':
-        #texto = "Pob. Beneficiaria"
-        return '../assets/poblacionBeneficiaria.png'
-    else:
-        #texto = "Monto del Apoyo"
-        return '../assets/dollar.svg'
-
-#########   CALL : Regresa texto Población Benef / Monto del apoyo  ################
-@app.callback(# 'click_feature
-        Output('resumen_texto_poblacion_beneficiaria', 'children'),
-        Input('beneficiarios-opciones', 'value'),
-    )
-def resumen_benef_textImag2(beneficiarios):
-    # condición
-    if beneficiarios == 'Número de Beneficiarios':
-        texto = "Pob. Beneficiaria"
-    else:
-        texto = "Monto del Apoyo"
-
-    return texto
-
-#########  CALL : Regresa Cantidad Población Beneficiaria  ################
-@app.callback(
-        Output('resumen-poblacion_beneficiaria', 'children'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        Input('beneficiarios-opciones', 'value'),
-        Input("transfer-list-simple", "value"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
-
-def resumen_pablacion_beneficiaria(clicks, feature, beneficiario, transfer_sel, sel_producto, sel_anio):
-
-    # capas
-    capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
-    # grado de marginación
-    margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-    # tamaño del productor
-    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
-    
-    # estado: feature["properties"]["name"]
-    data = base_municipios.copy()
-    data['MONTO_APOYO_TOTALsum'] = data['MONTO_APOYO_TOTALsum'].astype('float')
-    # filtros
-    data = data[data['Anio'] == int(sel_anio)]
-    data = data[data['Producto'] == sel_producto]
-    data = data[data['GM_2020'].isin(margin)]
-    # filtro para tamaño de productor
-    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
-        tproductor = ['Todos']
-        data = data[data['TAMPROD'].isin(tproductor)]
-    else:
-        data = data[data['TAMPROD'].isin(tproductor)]
-
-    # Condición
-    if ('Beneficiarios' not in capas_sel) or len(margin)==0:
-        return '-'
-    else:
-        if beneficiario == 'Número de Beneficiarios':
-            if not feature:
-                result = np.round(np.sum(data['NUM_BENEFsize']),0)
-            else:
-                # filtro de estado
-                data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-                # Sin dato nombre de dato faltante
-                result = np.round(np.sum(data_filt['NUM_BENEFsize']))
-
-            return "{:,}".format(result)
-        else:
-            if not feature:
-                result = np.sum(data['MONTO_APOYO_TOTALsum'])
-            else:
-                # filtro de estado
-                data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-                # Sin dato nombre de dato faltante
-                result = np.sum(data_filt['MONTO_APOYO_TOTALsum'].astype('float'))
-
-            return millify(result, precision=1)
+################################################################
+#  Cnetros de acopio
+get_card_centros_acopio(app)
+get_card_poblacion_beneficiaria_img(app)
+get_card_poblacion_beneficiaria_texto(app)
+get_card_poblacion_beneficiaria(app)
+get_card_volumen_incentivado(app)
+get_card_volumen_incentivado_promedio(app)
 
 
-
-
-#                      CARD 3 : Monto apoyos total
-# @app.callback(
-#         Output('resumen-monto_apoyos_total', 'children'),
-#         Input('submit-button', 'n_clicks'),
-#         Input("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-# def resumen_monto_apoyos_total(clicks, feature, sel_producto, sel_anio):
-
-#     data = base_entidad.copy()
-#     # filtros
-#     data = data[data['Anio'] == int(sel_anio)]
-#     data = data[data['Producto'] == sel_producto]
-
-#     # Condición
-#     if not feature:
-#         result = np.sum(data['MONTO_APOYO_TOTALsum'])
-#     else:
-#         # filtro de estado
-#         data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-#         # Sin dato nombre de dato faltante
-#         result = np.sum(data_filt['MONTO_APOYO_TOTALsum'])
-#     # millify(monto_apoyos, precision=2)
-#     return millify(result, precision=1)
-
-#                      CARD 4 : Monto apoyos promedio
-# @app.callback(
-#         Output('resumen_monto_apoyos_prom', 'children'),
-#         Input('submit-button', 'n_clicks'),
-#         Input("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-# def resumen_monto_apoyos_promedio(clicks, feature, sel_producto, sel_anio):
-
-#     data = base_entidad.copy()
-#     # filtros
-#     data = data[data['Anio'] == int(sel_anio)]
-#     data = data[data['Producto'] == sel_producto]
-
-#     # Condición
-#     if not feature:
-#         result = np.mean(data['MONTO_APOYO_TOTALsum'])
-#     else:
-#         # filtro de estado
-#         data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-#         # Sin dato nombre de dato faltante
-#         result = np.mean(data_filt['MONTO_APOYO_TOTALmean'])
-
-#     # millify(monto_apoyos, precision=2)
-#     return millify(result, precision=1)
-
-#########  CALL : Regresa Monto Volumne Incentivado  ################
-@app.callback(
-        Output('resumen-volumen_incentivado_total', 'children'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        Input("transfer-list-simple", "value"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
-
-def resumen_volumen_incentivado_total(clicks, feature, transfer_sel, sel_producto, sel_anio):
-
-    # capas
-    capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
-    # grado de marginación
-    margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-    # tamaño del productor
-    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
-    
-    data = base_municipios.copy()
-    # filtros
-    data = data[data['Anio'] == int(sel_anio)]
-    data = data[data['Producto'] == sel_producto]
-    data = data[data['GM_2020'].isin(margin)]
-    # filtro para tamaño de productor
-    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
-        tproductor = ['Todos']
-        data = data[data['TAMPROD'].isin(tproductor)]
-    else:
-        data = data[data['TAMPROD'].isin(tproductor)]
-    # condición
-    if ('Beneficiarios' not in capas_sel) or len(margin)==0:
-        return '-'
-    else:
-        if not feature:
-            result = np.sum(data['VolumenIncentivadosum']) 
-        else:
-            # filtro de estado
-            data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-            # Sin dato nombre de dato faltante
-            result = np.sum(data_filt['VolumenIncentivadosum'])
-            
-        return millify(result, precision=1)
-  
-
-
-    # if not feature:
-    #     result = np.sum(data['VolumenIncentivadosum'])
-    # else:
-    #     # filtro de estado
-    #     data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-    #     # Sin dato nombre de dato faltante
-    #     result = np.sum(data_filt['VolumenIncentivadosum'])
-    # # millify(monto_apoyos, precision=2)
-    # return millify(result, precision=1)
-
-#########  CALL : Regresa Monto Volumen Incentivado Promedio  ################
-@app.callback(
-        Output('resumen-volumen_incentivado_promedio', 'children'),
-        Input('submit-button', 'n_clicks'),
-        Input("states", "click_feature"),
-        Input("transfer-list-simple", "value"),
-        State('producto', 'value'),
-        State('anio', 'value')
-    )
-def resumen_volumen_incentivado_promedio(clicks, feature, transfer_sel, sel_producto, sel_anio):
-
-    # capas
-    capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
-    # grado de marginación
-    margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-    # tamaño del productor
-    tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
-    
-    data = base_municipios.copy()
-    # filtros
-    data = data[data['Anio'] == int(sel_anio)]
-    data = data[data['Producto'] == sel_producto]
-    data = data[data['GM_2020'].isin(margin)]
-    # filtro para tamaño de productor
-    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
-        tproductor = ['Todos']
-        data = data[data['TAMPROD'].isin(tproductor)]
-    else:
-        data = data[data['TAMPROD'].isin(tproductor)]
-    # condición
-    if ('Beneficiarios' not in capas_sel) or len(margin)==0:
-        return '-'
-    else:
-        if not feature:
-            result = np.sum(data['VolumenIncentivadosum'])/np.sum(data['NUM_BENEFsize'])  
-        else:
-            # filtro de estado
-            data_filt = data[data['NOM_ENT'] == feature["properties"]["name"]]
-            # Sin dato nombre de dato faltante
-            if np.sum(data_filt['VolumenIncentivadosum']) == 0:
-                result = 0
-            else:
-                result = np.sum(data_filt['VolumenIncentivadosum'])/np.sum(data_filt['NUM_BENEFsize']) 
-            
-        return millify(result, precision=1)
-    # # condición para validar criterios de marginación: si la lista estpá vacia regresa '-'
-    # if len(margin) == 0:
-    #     return '-'
-    # else:
-    #     return '-'
-
-
-# Descarga de resumen ejecutivo
-# @app.callback(
-#         Output("download", "data"),
-#         Input("btn", "n_clicks"))
-# def func(n_clicks):
-#    return dcc.send_file("C:/Users/jcmartinez/Desktop/Dashboard3/salidas/RESUMEN EJECUTIVO PGPAB.pdf")
 
 ##########################################################################################
-# SECCIÓN I :  mapa
+#                           SECCIÓN I :  mapa
 ##########################################################################################
 #########       CALL : Transfer list  ################
 
@@ -1084,15 +1276,20 @@ tab1_capas_criterios = html.Div([
     dmc.TransferList(
         id="transfer-list-simple",
         value=list_capas_marginacion,
+        #sx={'height':'14rem'},
         searchPlaceholder=['Agregar...', 'Remover...'],
         nothingFound=['Cannot find item to add', 'Cannot find item to remove'],
         placeholder=['No item left to add', 'No item left ro remove'],
-        style={'fontSize':'10px','marginBottom':'0.5rem'}
+        style={'fontSize':'10px','marginBottom':'2rem'}
     ),
     ############### Tablero resumen
-    dmc.Card([
-        #dmc.CardSection([
-            dmc.SimpleGrid(cols=2,  children=[
+    dmc.Center([
+        dmc.Card([
+            dmc.SimpleGrid(cols=2,
+                breakpoints=[
+                    {"minWidth": 350, "maxWidth": 400, "cols": 1, "spacing": "md"},
+                    {"minWidth": 350, "maxWidth": 400, "cols": 2, "spacing": "md"},
+                ],children=[
                 # card1 : centros de acopio
                 dmc.Tooltip(
                         multiline=True,
@@ -1106,25 +1303,24 @@ tab1_capas_criterios = html.Div([
                         children=[
                             dmc.Card([
                                 dbc.Row([
-                                    dbc.Col([
+                                    dbc.Col([ # col-sm-12 col-md-6
                                         html.Img(id='image', src='../assets/centrosAcopio.png', width="65", height="65"),
-                                    ],className="card col-3 border-0 bg-transparent", style={'paddin':'0px','marginTop':'0em', 'marginBottom':'0em', 'textAlign': 'left'}),
+                                    ],className="card col-lg-3 border-0 bg-transparent", style={'paddingTop':'0rem', 'paddingBottom':'0rem', 'marginTop':'0rem', 'marginBottom':'0rem', 'textAlign': 'left'}),
                                     dbc.Col([
                                         dbc.Row([html.Center(html.Div([
                                         "1,332",
-                                        ], id='resumen-centros_acopio', style={'marginTop':'0em',"textAling":"center", "color":"red", 'font-size': '32px'}),
+                                        ], id='resumen-centros_acopio', style={'marginTop':'0em','text-align': 'center', "color":"red", 'font-size': '32px'}),
                                         )]),
-                                        dbc.Row([html.Div([
-                                            dmc.Text("Centros  Acopio", color='grey', weight=500, align='center', style={"fontSize": 11}),
+                                        dbc.Row([
+                                            dmc.Text("Centros  de  acopio", color='grey', weight=500, align='center', style={"fontSize": 10})
                                             ]),
-                                        ]),
                                     ], className="card col-9 border-0 bg-transparent"),
-                                ], style={'border-radius': '5px', 'paddin':'0rem'}),
+                                ], style={'border-radius': '5px', 'padding':'0rem', 'paddingLeft':'0.2rem'}),
                             ],
-                            withBorder=False,
+                            withBorder=True,
                             shadow="sm",
                             radius="md",
-                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                            style={"width": "100%", "margin":"0rem" ,"padding":'0rem', 'backgroundColor': '#F4F6F6'},),
                 ], style={'fontSize':'12px'}),
                 # card2 : Beneficiarios
                 dmc.Tooltip(
@@ -1140,24 +1336,23 @@ tab1_capas_criterios = html.Div([
                             dmc.Card([
                                 dbc.Row([
                                     dbc.Col([
-                                        html.Img(id='image-poblacion_beneficiaria', src='../assets/poblacionBeneficiaria.png', width="65", height="65"),
-                                    ],className="card col-3 border-0 bg-transparent", style={'margin':'0em', 'textAlign': 'left'}),
+                                        html.Img(id='image-poblacion_beneficiaria', src='../assets/poblacionBeneficiaria.png', width="63", height="65"),
+                                    ],className="card col-3 border-0 bg-transparent", style={'paddingTop':'0rem', 'paddingBottom':'0rem', 'margin':'0em', 'textAlign': 'left'}),
                                     dbc.Col([
                                         dbc.Row([html.Center(html.Div([
                                         "1,332",
-                                        ], id='resumen-poblacion_beneficiaria', style={'marginTop':'0em',"textAling":"center", "color":"blue", 'font-size': '32px'}),
+                                        ], id='resumen-poblacion_beneficiaria', style={'paddingRight':'0rem','text-align': 'center', "color":"blue", 'font-size': '32px'}),
                                         )]),
-                                        dbc.Row([html.Div([
-                                            dmc.Text("Pob. Beneficiaria", id='resumen_texto_poblacion_beneficiaria', color='grey', weight=500, align='center', style={"fontSize": 11}),
-                                            ]),
+                                        dbc.Row([
+                                            dmc.Text("Población Beneficiaria", id='resumen_texto_poblacion_beneficiaria', color='grey', weight=500, align='right', style={"fontSize": 10, 'paddingRight':'0rem'}),
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
-                                ], style={'border-radius': '5px', 'paddin':'0rem'}),
+                                ], style={'border-radius': '5px', 'paddin':'0rem', 'width':'100%'}),
                             ],
-                            withBorder=False,
+                            withBorder=True,
                             shadow="sm",
                             radius="md",
-                            style={"padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                            style={"width": "100%", "margin":'0rem', "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
                 ], style={'fontSize':'12px'}),
                 # Card 3 : Monto de apoyos
                 dmc.Tooltip(
@@ -1173,24 +1368,24 @@ tab1_capas_criterios = html.Div([
                             dmc.Card([
                                 dbc.Row([
                                     dbc.Col([
-                                        DashIconify(icon="emojione-monotone:balance-scale", width=60, height=60),
-                                    ],className="card col-3 border-0 bg-transparent", style={'marginTop':'0em', 'textAlign': 'left'}),
+                                        DashIconify(icon="emojione-monotone:balance-scale", width=65, height=60),
+                                    ],className="card col-3 border-0 bg-transparent", style={'paddingTop':'0rem', 'paddingBottom':'0rem','marginTop':'0em', 'textAlign': 'left'}),
                                     dbc.Col([
                                         dbc.Row([html.Center(html.Div([
                                         "1,332",
-                                        ], id='resumen-volumen_incentivado_total', style={'marginTop':'0em',"textAling":"center", "color":"green", 'font-size': '32px'}),
+                                        ], id='resumen-volumen_incentivado_total', style={'paddingRight':'0rem','text-align': 'center', "color":"green", 'font-size': '32px'}),
                                         )]),
-                                        dbc.Row([html.Div([
-                                            dmc.Text("Vol. Incentivado (Total)", color='grey', weight=500, align='center', style={"fontSize": 10}),
-                                            ]),
+                                        dbc.Row([
+                                            dmc.Text("Vol Incentivado Total", color='grey', weight=500, align='right', style={"fontSize": 10, 'paddingRight':'0rem'}),
+                                            
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
-                                ], style={'border-radius': '5px', 'paddin':'0rem'}),
+                                ], style={'border-radius': '5px', 'paddin':'0rem', 'width':'100%'}),
                             ],
-                            withBorder=False,
+                            withBorder=True,
                             shadow="sm",
                             radius="md",
-                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
+                            style={"width": "100%", "padding":'0rem', 'backgroundColor': '#F4F6F6'},),
                 ], style={'fontSize':'10px'}),
                 # Card 4: Vol incentivado promedio
                 dmc.Tooltip(
@@ -1206,29 +1401,27 @@ tab1_capas_criterios = html.Div([
                             dmc.Card([
                                 dbc.Row([
                                     dbc.Col([
-                                        DashIconify(icon="emojione-monotone:balance-scale", width=60, height=60),
-                                    ],className="card col-3 border-0 bg-transparent", style={'marginTop':'0em', 'textAlign': 'left'}),
+                                             DashIconify(icon="emojione-monotone:balance-scale", width=65, height=60),
+                                    ],className="card col-3 border-0 bg-transparent", style={'paddingTop':'0rem', 'paddingBottom':'0rem', 'marginTop':'0em', 'textAlign': 'left'}),
                                     dbc.Col([
                                         dbc.Row([html.Center(html.Div([
                                         "51%",
-                                        ], id='resumen-volumen_incentivado_promedio', style={'marginTop':'0em',"textAling":"center", "color":"grey", 'font-size': '32px'}),
+                                        ], id='resumen-volumen_incentivado_promedio', style={'padding':'0em',"textAling":"right", "color":"grey", 'font-size': '32px'}),
                                         )]),
-                                        dbc.Row([html.Div([
-                                            dmc.Text("Vol. Incentivado (Prom)", color='gray', weight=500, align='center', style={"fontSize": 10}),
-                                            ]),
+                                        dbc.Row([
+                                            dmc.Text("Vol Incentivado Prom.", color='gray', weight=500, align='right', style={"fontSize": 10, 'text-align': 'center', 'paddingRight':'0rem'}),
                                         ]),
                                     ], className="card col-9 border-0 bg-transparent"),
-                                ], style={'border-radius': '5px', 'paddin':'0rem'}),
+                                ], style={'border-radius': '5px', 'paddin':'0rem', 'width':'100%'}),
                             ],
-                            withBorder=False,
+                            withBorder=True,
                             shadow="sm",
                             radius="md",
-                            style={ "padding":'0rem', 'backgroundColor': '#F4F6F6'},)
+                            style={"width": "100%", "padding":'0rem', 'backgroundColor': '#F4F6F6'},)
                 ], style={'fontSize':'10px'}),
-            ], 
-        ),
-    ], style={'marginLeft':'0.5rem', 'paddingLeft':'0rem'}),
-
+            ]),
+        ], style={'margin':'0rem', 'padding':'0rem'}),
+    ]),
 ])
 
 #  Pestaña de opciones (Transfer list - Criterios simulados)
@@ -1284,7 +1477,7 @@ tab2_capas_criterios = html.Div([
             #     nothingFound="No options found",
             #     style={"width": '100%'}
             # ),
-        ], style={'marginBottom':'6rem'}),
+        ], style={'marginBottom':'8rem'}),
         
         
         # dmc.Center([
@@ -1299,12 +1492,10 @@ tab2_capas_criterios = html.Div([
 
         # ]),
         
-    ], style={'padding':'0rem', 'marginBottom':'4rem'}),
-
+    ], style={'padding':'0rem', 'marginBottom':'2rem'}),
+    
+    
 ])
-
-
-
 
 ######### CALL : Download PDF  ################
 # @app.callback(Output("download", "data"),
@@ -1367,11 +1558,10 @@ def input_triggers_spinner(value):
     time.sleep(2)
     return value
 
-
 @app.callback(Output("ls-loading-output-2", "children"), 
               Input("ls-input-2", "value"))
 def input_triggers_nested(value):
-    time.sleep(2)
+    time.sleep(1)
     return value
 
 ####   actualiza tabla-Mapa
@@ -1391,7 +1581,7 @@ def get_state(clicks, feature):
     else:
         # filtro de estado
         state = feature["properties"]["name"]
-        urls_est = str(estados_urls[estados_urls['NOM_ENT']==state]['Liga'].to_list()[0])
+        urls_est = str(estados_urls[estados_urls['nom_ent']==state]['Liga'].to_list()[0])
     
         return [
             html.H4("{}".format(feature["properties"]["name"])),
@@ -1406,68 +1596,282 @@ def get_state(clicks, feature):
 def info_hover(feature):
     return get_info(feature)
 
+####################################################################
+#    Gráficos
+####################################################################
+def boxplot(base, by, col, entidad):
+    
 
-# base mapa 1   
-# base_m1 = dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#                     options=dict(style=style_handle),  # how to style each polygon
-#                     zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#                     zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#                     # color : color del perimetro del hover
-#                     # dashArray : tipo de linea 
-#                     # #154360
-#                     hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#                     hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-#                     id='states')
+  df_filter = base.copy()
+  # define orden con base en la variable col
+  df_mean = df_filter.groupby(by).agg({col:np.mean}).reset_index()
+  df_mean = df_mean.sort_values(col, ascending=False)
+  ent_order = df_mean.reset_index(drop=True).reset_index().drop(col, axis=1)
+  # agrega variable orden a la base
+  df_filter = df_filter.merge(ent_order, on=by, how='left')
+  df = df_filter.sort_values('index', ascending=True)
 
-# # contenido mapas
-# # Base
-# base = dl.Pane(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#                 options=dict(style=style_handle),  # how to style each polygon
-#                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#                 # color : color del perimetro del hover
-#                 # dashArray : tipo de linea 
-#                 # #154360
-#                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-#                 id='states')), name="base", style={'zIndex':1})
+  # entidad seleccionada
+  entidad_color = entidad #'Sinaloa'
+  idx = int(ent_order[ent_order[by]==entidad_color]['index'])
+  #print(idx)
+  # numero de estados 
+  N = len(df[by].unique())
+  # define colores para los estados
+  markercolor = ['#EBEDEF',] * N
+  linecolor = ['#EBEDEF',] * N
+  # define color para la entidad seleccionada
+  markercolor[idx] = '#3498DB'
+  linecolor[idx] = '#3498DB'
+  
+  base_group_ent = df.groupby(by).agg({col:np.sum, 'index':np.mean}).sort_values('index', ascending=True)
+  base_group_ent = base_group_ent.reset_index()
+  # plot
+  fig = make_subplots(rows=1, cols=1, shared_xaxes=False,horizontal_spacing=0.05)
+  #fig = go.Figure()
+  i = 0
+  for ent in base_group_ent[by].to_list():
+    # filtro de base por entidad
+    base_monto_sum = base_group_ent[base_group_ent[by]==ent]
+    # gráfico Box plot
+    fig.add_traces(go.Box(
+        y=base[base[by]==ent][col],
+        name=i, #ent,
+        marker_color=markercolor[i],
+        marker_line_width=1,
+        marker_size=1,
+        line_color=linecolor[i],
+        
+      ))
 
-# # volumen producción
-# def volumenProduccion_choice(producto, anio):
-#     anio_sel = anio
-#     producto_sel = producto
-#     # condition for year
-#     if int(anio_sel) == 2019 and producto_sel == 'Leche':
-#         colorprop = 1
-#         estilo = style2
-#     else:
-#         colorprop = f'{anio_sel}-{producto_sel}'
-#         estilo = style
-#     # layer
-#     volumen_produccion = dl.Pane(dl.LayerGroup(dl.GeoJSON(data=data2,  # url to geojson file
-#                                 options=dict(style=style_handle),  # how to style each polygon
-#                                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#                                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#                                 hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop), #2e4053
-#                                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='1')),  # style applied on hover
-#                                 id='states')), name='Volumen Producción', style={'zIndex':2})
+    # gráfico de barras
+    # fig.append_trace(go.Bar(
+    #     x=[ent],
+    #     y=base_monto_sum[col],
+    #     text= [millify(val, precision=0) for val in base_monto_sum[col]], 
+    #     name=ent,
+    #     orientation='v',
+    #     marker_color=markercolor[i],
+    #     textfont=dict(
+    #       color='white'
+    #     )
+    #     #line_color=linecolor[i]
+    #   ), row=2, col=1)
 
-#     return volumen_produccion
+    i += 1
 
-# @app.callback(
-#     Output("states", "hideout"),
-#     Input("states", "n_clicks"),
-#     State("states", "clickData"),
-#     State("states", "hideout"),
-#     prevent_initial_call=True)
-# def toggle_select(_, feature, hideout):
-#     selected = hideout["selected"]
-#     name = feature["properties"]["name"]
-#     if name in selected:
-#         selected.remove(name)
-#     else:
-#         selected.append(name)
-#     return hideout
+    fig.update_layout(
+            showlegend=False,
+            autosize=True,
+            #width=650,
+            height=315,
+            margin=dict(
+                l=0,
+                r=0,
+                b=30,
+                t=50,
+                pad=0),
+                plot_bgcolor='white',
+                paper_bgcolor="white",
+                )
+    fig.update_traces(width=0.7)
+  # yaxis
+  fig.update_yaxes(title_text="Monto del apoyo ($)", row=1, col=1)
+  fig.update_yaxes(title_text="Monto del apoyo ($)", row=2, col=1)
+  fig.update_xaxes(title_text="Entidad", automargin = True, row=2, col=1)
+
+
+
+  # format the layout
+  fig.update_layout(showlegend=False, )
+  
+  return fig
+
+# barplot
+def barplot(base, by, col, entidad):
+
+  df_filter = base.copy()
+  # define orden con base en la variable col
+  df_mean = df_filter.groupby(by).agg({col:np.sum}).reset_index()
+  df_mean = df_mean.sort_values(col, ascending=False)
+  ent_order = df_mean.reset_index(drop=True).reset_index().drop(col, axis=1)
+  # agrega variable orden a la base
+  df_filter = df_filter.merge(ent_order, on=by, how='left')
+  df = df_filter.sort_values('index', ascending=True)
+
+  # entidad seleccionada
+  entidad_color = entidad #'Sinaloa'
+  idx = int(ent_order[ent_order[by]==entidad_color]['index'])
+  #print(idx)
+  # numero de estados
+  N = len(df[by].unique())
+  # define colores para los estados
+  markercolor = ['#EBEDEF',] * N
+  linecolor = ['#EBEDEF',] * N
+  # define color para la entidad seleccionada
+  markercolor[idx] = '#3498DB'
+  linecolor[idx] = '#3498DB'
+
+  base_group_ent = df.groupby(by).agg({col:np.sum, 'index':np.mean}).sort_values(col, ascending=False)
+  base_group_ent = base_group_ent.reset_index()
+  # plot
+  fig = make_subplots(rows=1, cols=1, shared_xaxes=True,horizontal_spacing=0.05)
+  #fig = go.Figure()
+  i = 0
+  for ent in base_group_ent[by].to_list():
+    # filtro de base por entidad
+    base_monto_sum = base_group_ent[base_group_ent[by]==ent]
+    # gráfico Box plot
+    # fig.add_traces(go.Box(
+    #     y=base[base[by]==ent][col],
+    #     name=ent,
+    #     marker_color=markercolor[i],
+    #     line_color=linecolor[i]
+    #   ))
+
+    # gráfico de barras
+    fig.append_trace(go.Bar(
+        x=[i],
+        y=base_monto_sum[col],
+        text= [millify(val, precision=0) for val in base_monto_sum[col]],
+        name= i, #ent,
+        orientation='v',
+        #line=dict(color=markercolor[i]),
+        #fillcolor=markercolor[i],
+        marker_color=markercolor[i],
+        textfont=dict(
+          color='white'
+        )
+        #line_color=linecolor[i]
+      ), row=1, col=1)
+
+    i += 1
+
+
+  fig.update_layout(
+          showlegend=False,
+          autosize=True,
+          #width=650,
+          height=315,
+          margin=dict(
+              l=0,
+              r=0,
+              b=30,
+              t=50,
+              pad=0),
+              plot_bgcolor='white',
+              paper_bgcolor="white",
+              )
+
+  # yaxis
+  fig.update_yaxes(title_text="Monto del apoyo ($)", row=1, col=1)
+  fig.update_yaxes(title_text="Monto del apoyo ($)", row=2, col=1)
+  fig.update_xaxes(title_text="Entidad", automargin = True, row=2, col=1)
+
+
+
+  # format the layout
+  fig.update_layout(showlegend=False, )
+
+  return fig
+
+# tabla 
+def create_table_mun(base, entidad_sel):
+  df_filter = base.copy()
+  # filtro por año y por producto y entidad
+  df_table1 = df_filter[df_filter['nom_ent']==entidad_sel]\
+    .groupby(['nom_ent','Tamaño del productor','GMM'])\
+    .agg({'cve_loc':np.size,
+          #'Volumen incentivado (Litros / Toneladas)':np.mean,
+          'Monto de apoyo total $':[np.mean, np.sum]})
+
+  # round
+  #df_table1['Volumen incentivado (Litros / Toneladas)'] = np.round(df_table1['Volumen incentivado (Litros / Toneladas)'],2)
+  df_table1['Monto de apoyo total $'] = np.round(df_table1['Monto de apoyo total $'],2)
+  # change column name
+  df_table1.columns = [i[0] +'('+ i[1] + ')' for i in df_table1.columns]
+  df_table1 = df_table1.reset_index()
+  # gráfico
+  fig = go.Figure()
+  fig.add_traces(data=[
+      go.Table(
+          header=dict(values=['Ent','Tamaño Productor', 'Grado Marginación', 'No. Benef.', 'Monto Apoyo (prom.)', 'Monto Apoyo (total)'], font=dict(color='white', size=9)),
+          cells=dict(values=[df_table1[col] for col in df_table1.columns.to_list()], align='left', font=dict(color='black', size=8)))
+      ])
+  fig.update_layout(
+        showlegend=False,
+        autosize=True,
+        #width=420,
+        height=810,
+        margin=dict(
+            l=0,
+            r=0,
+            b=0,
+            t=0,
+            pad=0),
+            plot_bgcolor='white',
+            paper_bgcolor="white",
+            )
+
+  return fig
+
+ 
+#####################################################################
+@app.callback(Output("boxplot_ent", "figure"),
+              Input("states", "click_feature"),
+              State('producto', 'value'),
+              State('anio', 'value'))
+
+def create_boxplot(feature, producto_sel, anio_sel):
+    # obtiene estado
+    state = str(feature["properties"]["name"])
+    df_filter = df.copy() 
+    
+    df_filter = df_filter[df_filter['cultivo']==producto_sel]
+    df_filter = df_filter[df_filter['year']==int(anio_sel)]
+    # define orden con base en la variable col
+    fig = boxplot(base=df_filter, by='nom_ent', col='Monto de apoyo total $', entidad=state)
+        
+    return fig
+
+# barplot entidad
+@app.callback(Output("barplot_ent", "figure"),
+              Input("states", "click_feature"),
+              State('producto', 'value'),
+              State('anio', 'value'))
+
+def create_boxplot(feature, producto_sel, anio_sel):
+    # obtiene estado
+    state = str(feature["properties"]["name"])
+    df_filter = df.copy() 
+    
+    df_filter = df_filter[df_filter['Producto']==producto_sel]
+    df_filter = df_filter[df_filter['Anio']==int(anio_sel)]
+    # define orden con base en la variable col
+    fig = barplot(base=df_filter, by='nom_ent', col='Monto de apoyo total $', entidad=state)
+        
+    return fig
+
+
+# callback table
+@app.callback(Output("table_ent", "figure"),
+              Input("states", "click_feature"),
+              State('producto', 'value'),
+              State('anio', 'value'))
+def tabla(feature, producto_sel, anio_sel):
+    
+    state = str(feature["properties"]["name"])
+    df_filter = df.copy() 
+    
+    df_filter = df_filter[df_filter['Producto']==producto_sel]
+    df_filter = df_filter[df_filter['Anio']==int(anio_sel)]
+    # define orden con base en la variable col
+    fig = create_table_mun(df_filter,state)
+        
+    
+    return fig
+    
+
 
 
 
@@ -1524,392 +1928,30 @@ def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
     tproductor = [item['label'] for item in transfer_sel[1] if item['group']=='Tamaño Productor']
     # bases
     productores_filter = base_productores.copy()
-    productores_filter = productores_filter[productores_filter['Producto']==producto_sel]
-    productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
-    productores_filter = productores_filter[productores_filter['GM'].isin(margin)]
+    # filtro por productores > 0
+    productores_filter = productores_filter[productores_filter['productores']>0]
+    productores_filter = productores_filter[productores_filter['latitud']>0]
+    productores_filter = productores_filter.dropna(subset='entidad', axis=0)
+    # filtro por cultivo
+    productores_filter = productores_filter[productores_filter['cultivo']==producto_sel]
+    #productores_filter = productores_filter[productores_filter['year']==int(anio_sel)]
+    productores_filter = productores_filter[productores_filter['gm'].isin(margin)]
     #productores_filter = productores_filter[productores_filter['TAMPROD'].isin(tproductor)]
-    centros = centros_municipio.copy()
-    centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)]
-    benef_filter = base_municipios.copy()
-    benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
-    benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
-    benef_filter = benef_filter[benef_filter['GM_2020'].isin(margin)]
-    # filtro para tamaño de productor
-    if set(tproductor) == set(['Pequeño', 'Mediano']) or set(tproductor) == set(['Pequeño', 'Mediano', 'Grande']):
-        tproductor = ['Todos']
-        benef_filter = benef_filter[benef_filter['TAMPROD'].isin(tproductor)]
-    else:
-        benef_filter = benef_filter[benef_filter['TAMPROD'].isin(tproductor)]
-    # elimina referencias geográficas con valores perdidos    
-    benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
+    centros = base_centros.copy()
+    centros['year'] = centros['year'].astype('int')
+    centros = centros[centros['gm'].isin(margin)]
+    centros = centros[centros['year']==int(anio_sel)]
+    
+    # beneficiarios
+    benef_filter = base_beneficiarios_mun_tprod.copy()
+    benef_filter = benef_filter[benef_filter['cultivo'] == producto_sel]
+    benef_filter = benef_filter[benef_filter['year'] == int(anio_sel)]
+    benef_filter = benef_filter[benef_filter['gm'].isin(margin)]
+    benef_filter = benef_filter[benef_filter['tipo'].isin(tproductor)]
      
     
     return mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, productores_filter, centros, benef_filter)
-# def actualizar_
-# (clicks, margin_sel, benef_sel,capas_sel, transfer_sel, producto_sel, anio_sel):
-# def actualizar_mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel):
 
-#     # capas
-#     capas_sel = [item['label']  for item in transfer_sel[1] if item['group']=='Capa']
-#     margin = [item['label'] for item in transfer_sel[1] if item['group']=='Grado Marginación']
-
-#     # if isinstance(capas_sel, str):
-#     #     capas = [capas_sel]
-#     # else:
-#     #     capas = capas_sel
-#     # nivel de marginación
-#     # if isinstance(margin_sel, str):
-#     #     margin = [margin_sel]
-#     # else:
-#     #     margin = margin_sel
-#     productores_filter = base_productores.copy()
-#     productores_filter = productores_filter[productores_filter['Producto']==producto_sel]
-#     productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
-#     productores_filter = productores_filter[productores_filter['GM'].isin(margin)]
-#     centros = centros_municipio.copy()
-#     centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)]
-#     benef_filter = base_municipios.copy()
-#     benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
-#     benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
-#     benef_filter = benef_filter[benef_filter['GM_2020'].isin(margin)]
-#     benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
-
-#     # # opción de beneficiarios
-#     # if benef_sel=='Número de Beneficiarios':
-#     #     benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio,fillOpacity=1,fillColor=color, color=color, children=[
-#     #         dl.Popup("Municipio: {}".format(mun))
-#     #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'])])
-#     # else:
-#     #     benef_option = dl.Pane([dl.CircleMarker(center=[lat, lon], radius=radio, color=color, children=[
-#     #         dl.Popup("Municipio: {}".format(mun))
-#     #         ]) for mun, lat, lon, radio, color in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'])])
-
-
-#     # # opción centros de acopio y de producción
-#     # if capas_sel == ['Beneficiarios']:
-#     #     tab2_mapa_content = html.Div([
-#     #         dl.Map(center=[22.76, -102.58], zoom=5, children=[
-#     #             dl.TileLayer(url=style1),
-#     #             colorbar,
-#     #             info,
-#     #             dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#     #                          options=dict(style=style_handle),  # how to style each polygon
-#     #                          zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                          zoomToBoundsOnClick=True,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                          # color : color del perimetro del hover
-#     #                          # dashArray : tipo de linea
-#     #                          hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#     #                          hoverStyle=arrow_function(dict(weight=4, color='#154360', dashArray='2')), # color de fondo
-#     #                          id='states'),
-#     #             benef_option,
-#     #             #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
-#     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
-#     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
-#     #             ],style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
-#     #             #html.Div(id="state"), html.Div(id="info2")
-#     #         ])
-
-#     # elif capas_sel == ['Centros de Acopio']:
-#     #     tab2_mapa_content = html.Div([
-#     #         dl.Map(center=[22.76, -102.58], zoom=5, children=[
-#     #             dl.TileLayer(url=style1),
-#     #             colorbar,
-#     #             info,
-#     #             dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#     #                         options=dict(style=style_handle),  # how to style each polygon
-#     #                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                         zoomToBoundsOnClick=True,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                         # color : color del perimetro del hover
-#     #                         # dashArray : tipo de linea
-#     #                         hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#     #                         hoverStyle=arrow_function(dict(weight=4, color='#154360', dashArray='2')), # color de fondo
-#     #                         id='states'),
-#     #             #benef_option,
-#     #             dl.Pane([dl.Circle(center=[lat, lon], radius=2, color='red', children=[
-#     #                             dl.Popup("Municipio: {}".format(mun))
-#     #                             ]) for lat, lon, mun in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_MUN'])]),
-#     #             #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
-#     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
-#     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
-#     #             ],style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
-#     #             #html.Div(id="state"), html.Div(id="info2")
-#     #         ])
-#     # elif capas_sel == ['Productores']:
-
-#     #     tab2_mapa_content = html.Div([
-#     #         dl.Map(center=[22.76, -102.58], zoom=5, children=[
-#     #             dl.TileLayer(url=style1),
-#     #             colorbar,
-#     #             info,
-#     #             dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#     #                         options=dict(style=style_handle),  # how to style each polygon
-#     #                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                         zoomToBoundsOnClick=True,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                         # color : color del perimetro del hover
-#     #                         # dashArray : tipo de linea
-#     #                         hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#     #                         hoverStyle=arrow_function(dict(weight=4, color='#154360', dashArray='2')), # color de fondo
-#     #                         id='states'),
-#     #             #benef_option,
-#     #             dl.Pane([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), color='black', children=[
-#     #                             dl.Popup("Municipio: {}".format(mun))
-#     #                             ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]),
-#     #             #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
-#     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
-#     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
-#     #             ],style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
-#     #             #html.Div(id="state"), html.Div(id="info2")
-#     #         ])
-#     # elif capas_sel == ['Volumen Producción']:
-#     #     # Si el producto es del año 2019 y Leche, grafica fondo blanco
-#     #     #   en caso contrario fondo en verde degradado.
-#     #     #   Valor de cero para anio-producto dibuja fondo declarado en hoverStyle
-
-#     #     # opciones para anio:2019 y producto Leche, ya que no existen datos
-#     #     if int(anio_sel) == 2019 and producto_sel == 'Leche':
-#     #         colorprop = 1
-#     #         estilo = style2
-#     #     else:
-#     #         colorprop = f'{anio_sel}-{producto_sel}'
-#     #         estilo = style
-
-#     #     tab2_mapa_content = html.Div([
-#     #         dl.Map(center=[22.76, -102.58], zoom=5, children=[
-#     #             dl.TileLayer(url=style1),
-#     #             colorbar,
-#     #             info,
-#     #             dl.GeoJSON(data=data2,  # url to geojson file
-#     #                         options=dict(style=style_handle),  # how to style each polygon
-#     #                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                         zoomToBoundsOnClick=True,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                         hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop),
-#     #                         hoverStyle=arrow_function(dict(weight=4, color='#154360', dashArray='2')),  # style applied on hover
-#     #                         id='states'),
-#     #             #benef_option,           #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
-#     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
-#     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
-#     #             ],style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}),
-#     #             #html.Div(id="state"), html.Div(id="info2")
-#     #         ])
-#     # else:
-#     #     # opciones para anio:2019 y producto Leche, ya que no existen datos
-#     #     if int(anio_sel) == 2019 and producto_sel == 'Leche':
-#     #         colorprop = 1
-#     #         estilo = style2
-#     #     else:
-#     #         colorprop = f'{anio_sel}-{producto_sel}'
-#     #         estilo = style2
-
-#     #     tab2_mapa_content = html.Div([
-#     #         dl.Map(center=[22.76, -102.58], zoom=5, children=[
-#     #             dl.TileLayer(url=style1),
-#     #             colorbar,
-#     #             info,
-#     #             dl.GeoJSON(data=data2,  # url to geojson file
-#     #                         options=dict(style=style_handle),  # how to style each polygon
-#     #                         zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                         zoomToBoundsOnClick=True,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                         hoverStyle=arrow_function(dict(weight=4, color='#154360', dashArray='2')),  # style applied on hover
-#     #                         hideout=dict(colorscale=colorscale, classes=classes, style=estilo, colorProp=colorprop),
-#     #                         id='states'),
-#     #             # benef_option,
-#     #             # dl.Pane([dl.Circle(center=[lat, lon], radius=6, color='red', children=[
-#     #             #                 dl.Popup("Municipio: {}".format(mun))
-#     #             #                 ]) for lat, lon, mun in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_MUN'])]),
-#     #             # #dl.GeoJSON(url="https://gist.githubusercontent.com/mcwhittemore/1f81416ff74dd64decc6/raw/f34bddb3bf276a32b073ba79d0dd625a5735eedc/usa-state-capitals.geojson", id="capitals"),  # geojson resource (faster than in-memory)
-#     #             #dl.GeoJSON(url="https://raw.githubusercontent.com/SESNA-Inteligencia/Dashboard-1_1/master/datasets/estadosMexico.json", id="states",
-#     #             #           hoverStyle=arrow_function(dict(weight=5, color='#5D6D7E', dashArray=''))),  # geobuf resource (fastest option)
-#     #             ],style={'width': '100%', 'height': '100vh', 'margin': "auto", "display": "block"}, id="map"),
-#     #             #html.Div(id="state"), html.Div(id="info2")
-#     #         ])
-
-    
-
-    
-#     # Beneficiarios 
-#     def beneficiarios_popup(ent, mun, gmargina, numbenef, monto):
-        
-#             result = html.Div([
-#                 html.Div([
-#                     html.Img(id='image-poblacion_beneficiaria2', src='../assets/poblacionBeneficiaria.png', width="65", height="65"),
-#                     dmc.Text('BENEFICIARIO(S)', weight=400,color='#4e203a'),
-#                 ], style={'textAlign': 'center'}),
-                
-#                 dmc.Divider(size="xs"),
-#                 dbc.Row([
-#                     dmc.Text(['Estado: ',ent]),
-#                     dmc.Text(['Municipio: ', mun]),
-#                     dmc.Space(h=4),
-#                     dmc.Text(['Grado de marginación: ', gmargina]),
-#                     dmc.Text(['No. Beneficiarios: ', numbenef]),
-#                     dmc.Text(['Monto total del apoyo: ', f'$ {prettify(monto)}']),
-#                 ])
-                
-#                 ])
-#             return result 
-        
-#     # Centros de acopio 
-#     def centros_popup(ent, mun,gmargina,numcentros):
-        
-#             result = html.Div([
-#                 html.Div([
-#                     html.Img(id='image-centros-acopio2', src='../assets/centrosAcopio.png', width="65", height="65"),
-#                     dmc.Text('CENTRO(S) DE ACOPIO', weight=400, color='#4e203a'),
-#                 ], style={'textAlign': 'center'}),
-                 
-#                 dmc.Divider(size="xs"),
-#                 dbc.Row([
-#                     dmc.Text(['Estado: ',ent]),
-#                     dmc.Text(['Municipio: ', mun]),
-#                     dmc.Space(h=4),
-#                     dmc.Text(['Grado de marginación: ', gmargina]),
-#                     dmc.Text(['No. Centros: ', numcentros]),
-
-#                 ])
-                
-#                 ])
-#             return result     
-    
-#     # Total productores 
-#     def productores_popup(ent, mun,gmargina,numprod):
-        
-#             result = html.Div([
-#                 html.Div([
-#                     DashIconify(icon="noto-v1:man-farmer", width=65, height=65),
-#                     #html.Img(id='image-centros-acopio2', src='../assets/centrosAcopio.png', width="65", height="65"),
-#                     dmc.Text('PRODUCTORES', weight=400, color='#4e203a'),
-#                 ], style={'textAlign': 'center'}),
-                
-#                 dmc.Divider(size="xs"),
-#                 dbc.Row([
-#                     dmc.Text(['Estado: ',ent]),
-#                     dmc.Text(['Municipio: ', mun]),
-#                     dmc.Space(h=4),
-#                     dmc.Text(['Grado de marginación: ', gmargina]),
-#                     dmc.Text(['No. Productores (Estimado): ', prettify(numprod)]),
-
-#                 ])
-                
-#                 ])
-#             return result
-    
-#     # opción de beneficiarios
-#     def benef_choice(benef_sel):
-#         #benef_filter = base
-#         if benef_sel == 'Número de Beneficiarios':
-#             benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio),fillOpacity=1,fillColor=color, color=color, children=[
-#                 #dl.Popup("Municipio: {}".format(mun))
-#                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
-#                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-#                 ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
-#         else:
-#             benef_option = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=(radio), fillOpacity=0, color=color, children=[
-#                 #dl.Popup("Municipio: {}".format(mun))
-#                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
-#                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-#                 ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['MONTO_APOYO_TOTALradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
-#         return benef_option
-    
-#     # capa de beneficiarios
-#     beneficiarios = benef_choice(benef_sel)
-
-#     # Centro de acopio
-#     centros = dl.Overlay(dl.LayerGroup([dl.Marker(position=[lat, lon], icon=dict(iconUrl='../assets/centrosAcopio.png',iconSize=[12, 16]), children=[
-#                                     dl.Tooltip(f"Centro(s) de acopio: {mun}-{ent}"),
-#                                     dl.Popup(centros_popup(ent, mun,gmargina,numcentros))
-#                                     ]) for lat, lon,ent, mun, gmargina, numcentros in zip(centros['LAT_DECIMAL'],centros['LON_DECIMAL'], centros['NOM_ENT'], centros['NOM_MUN'], centros['GM_2020'], centros['NUM_CENTROS'])]), name='Centros de Acopio', checked=True)
-
-#     # Productores
-#     productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
-#         dl.Tooltip(f"Productores: {mun}-{ent}"),
-#         dl.Popup(productores_popup(ent, mun,gmargina,numprod))
-#         ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])]), name='Productores', checked=True)
-
-#     # # Base
-#     # base = dl.GeoJSON(data=data2,  # url to geojson file  #283747
-#     #                 options=dict(style=style_handle),  # how to style each polygon
-#     #                 zoomToBounds=True,  # when true, zooms to bounds when data changes (e.g. on load)
-#     #                 zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
-#     #                 # color : color del perimetro del hover
-#     #                 # dashArray : tipo de linea 
-#     #                 # #154360
-#     #                 hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2),
-#     #                 hoverStyle=arrow_function(dict(weight=4, fillColor='#C51503', color='#C51503',opacity=0.1, fillOpacity=0.9, dashArray='2')), # color de fondo
-#     #                 id='states')
-    
-    
-
-#     # volumen producción
-#     volumen_produccion = volumenProduccion_choice(producto_sel, anio_sel)
-
-#     # diccionarios de capas
-#     layers = {
-#         #'Base': base,
-#         'Beneficiarios': beneficiarios,
-#         'Productores': productores,
-#         'Centros de Acopio': centros,
-#         'Volumen Producción': volumen_produccion
-#     }
-    
-#     # class MAP
-#     def Capas(features):
-#         # constructor
-#         # def __init__(self, background_style=bstyle):
-#         base_layer = [#dl.TileLayer(),
-#                       #dl.GestureHandling(),
-#                       #dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
-#                       # #html.Button("Zoom in", id="zoom_in"),
-#                       #dl.FullScreenControl(),
-#                       base,
-#                       info
-#                       ]
-#         # function
-#         # def add(self, features):
-#             # add layers
-#         for feature in features:
-#             #self.
-#             base_layer.append(layers[feature])
-#             if feature == 'Centros de acopio':
-                
-#                 base_layer.append(info_grado_marginacion)
-#             if feature == 'Beneficiarios':
-                
-#                 base_layer.append(info_num_benef)
-#                 base_layer.append(info_grado_marginacion)
-#             if (feature == 'Productores') and int(anio_sel) == 2021:
-                
-#                 base_layer.append(info_productores)
-#             if feature == 'Volumen Producción':
-                
-#                 base_layer.append(info_vol_prod)
-#                 base_layer.append(colorbar)
-               
-#                 # if (feature == 'Beneficiarios') or (feature == 'Productores') or (feature == 'Centros de Acopio'):
-#                 #     self.base_layer.append(info_grado_marginacion)
-            
-#         return base_layer
-        
-#     # background style del mapa
-#     children_layer = Capas(capas_sel)
-#     # dl.LayersControl([dmc.Text('Muy Bajo')])
-#     tab2_mapa_content = html.Div([
-#         dl.Map(center=[22.76, -102.58], zoom=5, children=dl.LayersControl(children_layer, position='topleft')
-#            , attributionControl=False,  style={'width': '100%', 'height': '100vh', 'backgroundColor':'white', 'margin': "auto", "display": "block"}),
-#         #html.Div(id="state"), html.Div(id="info2")
-#     ])
-        
-#     return tab2_mapa_content
-
-
-# actualizar mapá a nacional
-# @app.callback(
-#         Output('submit-button', 'n_clicks'),
-#         Input('btn_nacional', 'm_clicks'),
-# )
-# def regresa_nacional(n, m):
-    
-#     if(len(m)>0):
-#         return n
 
  # capa base
 capa_base = dl.Pane(dl.GeoJSON(data=data2,  # url to geojson file
@@ -1920,10 +1962,9 @@ capa_base = dl.Pane(dl.GeoJSON(data=data2,  # url to geojson file
                         hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
                         id='states'), style={'zIndex':0}) 
     
-    
 ######### Mapa criterios simulados   ################
 ##   CALLBACK : MAPA
-@app.callback(
+@app.callback(  
         Output('mapa2', 'children'),
         Input('submit-button', 'n_clicks'),
         Input('criterios1', 'value'),
@@ -1953,19 +1994,27 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     # else:
     #     margin = margin_sel
 
-    #productores_filter = base_productores_filter.copy()
-    #centros = centros_municipio.copy()
-    #centros = centros_municipio[centros_municipio['GM_2020'].isin(margin)].dropna(axis=0)
-    # base beneficiarios nivel municipio
     productores_filter = base_productores.copy()
-    productores_filter = productores_filter[productores_filter['Producto']==producto_sel]
-    productores_filter = productores_filter[productores_filter['Anio']==int(anio_sel)]
- 
+    # filtro por productores > 0
+    productores_filter = productores_filter[productores_filter['productores']>0]
+    #productores_filter = productores_filter[productores_filter['latitud']>0]
+    productores_filter = productores_filter.dropna(subset='entidad', axis=0)
+    # filtro por cultivo
+    productores_filter = productores_filter[productores_filter['cultivo']==producto_sel]
+    #productores_filter = productores_filter[productores_filter['year']==int(anio_sel)]
+    
+    #productores_filter = productores_filter[productores_filter['year']==int(anio_sel)]
+    #productores_filter = productores_filter[productores_filter['gm'].isin(margin)]
+    
+    #productores_filter = productores_filter[productores_filter['year']==int(anio_sel)]
+
     # base beneficiarios
-    benef_filter = base_municipios0.copy()
-    benef_filter = benef_filter[benef_filter['Producto'] == producto_sel]
-    benef_filter = benef_filter[benef_filter['Anio'] == int(anio_sel)]
-    benef_filter.dropna(subset = ['LAT_DECIMALmean'], inplace=True)
+    benef_filter = base_beneficiarios_mun_tprod.copy()
+    benef_filter = benef_filter[benef_filter['cultivo'] == producto_sel]
+
+    #benef_filter = benef_filter[benef_filter['cultivo'] == producto_sel]
+    benef_filter = benef_filter[benef_filter['year'] == int(anio_sel)]
+    benef_filter.dropna(subset = ['latitud', 'longitud'], inplace=True)
     
     # base productores
     # se seleccionan los registros por criterio seleccionado
@@ -2010,7 +2059,6 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
                 ])
             return result 
     
-    
     # Total productores 
     def productores_popup(ent, mun,gmargina,numprod):
         
@@ -2039,19 +2087,19 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
                 #dl.Popup("Municipio: {}".format(mun))
                 dl.Tooltip(f"Beneficiario(s): {mun}-{ent}"),
                 dl.Popup(beneficiarios_popup(ent, mun, gmargina, numbenef, monto))
-                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['NOM_ENT'], benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'], benef_filter['GMMcolor'], benef_filter['GM_2020'], benef_filter['NUM_BENEFsize'], benef_filter['MONTO_APOYO_TOTALsum'])]), name='Beneficiarios', checked=True)
+                ]) for ent, mun, lat, lon, radio, color, gmargina, numbenef, monto in zip(benef_filter['entidad'], benef_filter['municipio'], benef_filter['latitud'], benef_filter['longitud'], benef_filter['benef_total_radio'], benef_filter['gm_color'], benef_filter['gm'], benef_filter['benef_total'], benef_filter['monto_total'])]), name='Beneficiarios', checked=True)
     # beneficiarios = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=radio,dashArray=1, fillOpacity=0, color='blue', children=[
     #             dl.Popup("Municipio: {}".format(mun))
     #             ]) for mun, lat, lon, radio in zip(benef_filter['NOM_MUN'], benef_filter['LAT_DECIMALmean'], benef_filter['LON_DECIMALmean'], benef_filter['NUM_BENEFradio'])]), name='panel20', checked=True)
     
     # opción para agregar criterio del precio y marginación 
     if criterios_sel == 'Marginación':
-        productores_filter = productores_filter[~productores_filter['Escenario1'].isna()]
+        productores_filter = productores_filter[productores_filter['escenario_marginacion']>0]
         # productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
         #     dl.Popup("Municipio: {}".format(mun))
         #     ]) for lat, lon, mun, radio in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_MUN'], productores_filter['TotalProductores'])]), name='Marginación', checked=True)
     else:
-        productores_filter = productores_filter[~productores_filter['Escenario2'].isna()]
+        productores_filter = productores_filter[productores_filter['escenario_precio']>0]
     
     # productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(radio), fillOpacity=0, color='#ee2a16', children=[
     #     dl.Popup("Municipio: {}".format(mun))
@@ -2061,18 +2109,19 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     productores = dl.Overlay(dl.LayerGroup([dl.CircleMarker(center=[lat, lon], radius=np.log(numprod), color='#E12726', children=[
         dl.Tooltip(f"Productores: {mun}-{ent}"),
         dl.Popup(productores_popup(ent,mun,gmargina,numprod))
-        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['LAT_DECIMAL'],productores_filter['LON_DECIMAL'], productores_filter['NOM_ENT'], productores_filter['NOM_MUN'], productores_filter['GM'], productores_filter['TotalProductores'])]), name='Productores', checked=True)
+        ]) for lat, lon, ent, mun, gmargina, numprod in zip(productores_filter['latitud'],productores_filter['longitud'], productores_filter['cve_ent'], productores_filter['cve_mun'], productores_filter['gm'], productores_filter['productores'])]), name='Productores', checked=True)
 
     # capas por defecto
     capas = []
     # se agregan capas
     #if benef_sel == ["Beneficiarios"]:
     capas.extend([
-                info_escenarios_marginacion,
+                #info_escenarios_marginacion,
                 info,
                 capa_base,
                 beneficiarios,
-                productores])   
+                productores
+                ])   
     #else:   
         # capas.extend([
         #          info_escenarios_marginacion,
@@ -2087,7 +2136,6 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
                , attributionControl=False, style={'width': '100%', 'height': '100vh','backgroundColor':'white', 'margin': "auto", "display": "block"}),
             #html.Div(id="state"), html.Div(id="info2")
         ])
-    
     
     # elif capas_sel == ['Centros de Acopio']:
     #     tab2_mapa_content = html.Div([
@@ -2299,273 +2347,4 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     # ])
 
     return tab2_mapa_content
-
-############################################################################################
-# SECTION II :
-############################################################################################
-
-# Tabs actualization
-# tab1_r2c1_content = html.Div([
-#     html.Iframe(srcDoc=open(root + "/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read(), style={"height": "350px", "width": "800px"})
-# ])
-
-# tab2_r2c1_content = html.Div([
-#     dcc.Graph(id="plot2-r2c1")
-#     #dcc.Graph(id="tabla-r2c1")
-# ])
-# @app.callback(Output("content-r2c1", "children"),
-#               [Input("tabs-r2c1", "active_tab")])
-# def switch_tab(at):
-#     if at == "tab-r2c1-1":
-#         return tab1_r2c1_content
-#     elif at == "tab-r2c1-2":
-#         return tab2_r2c1_content
-#     return html.P("This shouldn't ever be displayed...")
-
-# #----------------------------------------------------------------------------------
-# #                     Actializa Gráfico 1:
-# #----------------------------------------------------------------------------------
-# @app.callback(
-#         Output('plot1-r2c1', 'figure'),
-#         Input('submit-button', 'n_clicks'),
-#         #Input('estados', 'value'),
-#         Input('anio', 'value')
-#     )
-
-# def actualizar_plot1_r2c1(clicks, anio_sel):
-
-
-#     return
-
-#----------------------------------------------------------------------------------
-#                     Actializa Gráfico 2:
-#----------------------------------------------------------------------------------
-
-# tab1_r2c2_content = html.Div([
-#         #dcc.Graph(id="mapa", mathjax=True)
-#         html.Iframe(id='plot1-r2c2', srcDoc=open(root + "/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read(), style={"height": "350px", "width": "800px"})
-#     ]),
-
-# tab2_r2c2_content = html.Div([
-#     dt.DataTable(id="plot2-r2c2")
-# ])
-
-# #  Actualiza tabs - mapa
-# @app.callback(Output("content-r2c2", "children"),
-#               [Input("tabs-r2c2", "active_tab")])
-# def switch_tab(at):
-#     if at == "tab-r2c2-1":
-#         return tab1_r2c2_content
-#     elif at == "tab-r2c2-2":
-#         return tab2_r2c2_content
-#     return html.P("This shouldn't ever be displayed...")
-
-#########  CALL : Actualiza gráfico cantidad/Monto productores  ################
-# @app.callback(
-#         Output('plot-r3c1', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r3c1(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-#     if feature == None:
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-
-#----------------------------------------------------------------------------------
-#                     Actializa Gráfico 3:
-#----------------------------------------------------------------------------------
-
-# tab1_r2c2_content = html.Div([
-#         #dcc.Graph(id="mapa", mathjax=True)
-#         html.Iframe(id='plot1-r2c2', srcDoc=open(root + "/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read(), style={"height": "350px", "width": "800px"})
-#     ]),
-
-# tab2_r2c2_content = html.Div([
-#     dt.DataTable(id="plot2-r2c2")
-# ])
-
-# #  Actualiza tabs - mapa
-# @app.callback(Output("content-r2c2", "children"),
-#               [Input("tabs-r2c2", "active_tab")])
-# def switch_tab(at):
-#     if at == "tab-r2c2-1":
-#         return tab1_r2c2_content
-#     elif at == "tab-r2c2-2":
-#         return tab2_r2c2_content
-#     return html.P("This shouldn't ever be displayed...")
-
-# # --------------------------------------------
-# @app.callback(
-#         Output('plot-r3c2', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r3c2(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-#     if feature == None:
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-
-
-
-#########################################################################################
-#  SECTION III - grafico Barras por municipio
-##########################################################################################
-# tab1_r3c1_content = html.Div([
-#         #dcc.Graph(id="mapa", mathjax=True)
-#         dcc.Graph(id="plot1-r3c1")
-#     ]),
-
-# tab2_r3c1_content = html.Div([
-#      #dcc.Graph(id="plot2-r3c1")
-#      html.Iframe(id='plot2-r3c1', srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read(), style={"height": "350px", "width": "1300px"})
-# ], style={'height':'60vh'})
-
-
-
-#--------------------------------------------------------------------------------------
-#  Actualización Tab 1 : row3-col1 Grafico qqplot
-#--------------------------------------------------------------------------------------
-# @app.callback(
-#         Output('plot-r1', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r1(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-#     if feature == None:
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-# @app.callback(
-#         Output('plot-r2', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r2(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-#     if feature == None:
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{'Nacional'}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/g1_barras/{str(anio_sel)}-{str(producto_sel)}-{entidad}.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-# @app.callback(
-#         Output('plot-r3', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r3(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-#     if feature == None:
-#         return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/sunburstPlot2.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-# @app.callback(
-#         Output('plot-r4', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r4(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-
-#     if feature == None:
-#         return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/sunburstPlot3.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-# @app.callback(
-#         Output('plot-r5', 'srcDoc'),
-#         Input('submit-button', 'n_clicks'),
-#         State("states", "click_feature"),
-#         State('producto', 'value'),
-#         State('anio', 'value')
-#     )
-
-# def actualizar_plot_r5(clicks, feature, producto_sel, anio_sel):
-#     # srcDoc=open("2019-Maíz-Durango.html", 'r', encoding = 'utf-8').read()
-#     # dist_plot = base[base['Anio'] == int(anio_sel)]
-#     # dist_plot = dist_plot[dist_plot['Producto']== producto_sel]
-
-#     if feature == None:
-#         return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-#     else:
-#         entidad = feature["properties"]["name"]
-
-#         return open(root + f"/graficos/sunburstPlot.html", 'r', encoding = 'utf-8').read()
-#         #html.Iframe(id='plot2-r3c1',src=file, style={"height": "350px", "width": "1300px"})
-
-
-
-
 
