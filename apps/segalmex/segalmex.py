@@ -70,32 +70,32 @@ from apps.segalmex.seccion7 import get_card_volumen_incentivado_promedio
 
 #import plotly.io as pio
 #pio.renderers.default = 'firefox'
-user='root'
-password='astro123'
-host='localhost'
-database='psociales'
+# user='root'
+# password='astro123'
+# host='localhost'
+# database='psociales'
 
 
-# coneccion con MySQL
-conn= mysql.connector.connect(user=user, 
-                            password=password,
-                            host=host,
-                            database=database)
-cursor = conn.cursor()
-# consulta
-query = 'select * from productores_mun;'
+# # coneccion con MySQL
+# conn= mysql.connector.connect(user=user, 
+#                             password=password,
+#                             host=host,
+#                             database=database)
+# cursor = conn.cursor()
+# # consulta
+# query = 'select * from productores_mun;'
 
-# base
-cursor.execute(query)
-# nombre de campos
-column_names = [i[0] for i in cursor.description]
-# lectura de base
-base = cursor.fetchall() 
-# dataframe
-base_productores = pd.DataFrame(base, columns=column_names)
-# cierre de la conección
-cursor.close()
-conn.close()
+# # base
+# cursor.execute(query)
+# # nombre de campos
+# column_names = [i[0] for i in cursor.description]
+# # lectura de base
+# base = cursor.fetchall() 
+# # dataframe
+# base_productores = pd.DataFrame(base, columns=column_names)
+# # cierre de la conección
+# cursor.close()
+# conn.close()
 # imprimimos primeras líneas
 
 
@@ -110,7 +110,6 @@ conn.close()
 #repo_est_url = ""
 #estados_json = open(root + '/datasets/estadosMexico.json')
 #mx_est_geo = json.load(estados_json)
-json.load(open(root +'/datasets/sample3.json'))
 #data2 = json.load(open(root +'/datasets/sample4.json'))
 data2 = json.load(open(root +'/datasets/geoVolProd.json'))
 #data3= json.load(open(root +'/datasets/sample5.json', "r", encoding="utf-8"))
@@ -147,7 +146,7 @@ base_centros = base_centros[~base_centros['latitud'].isna()]
 base_centros = base_centros[~base_centros['longitud'].isna()]
 # base de productores 
 
-#base_productores = pd.read_excel(root + '/datasets/TotalProductores.xlsx', converters={'cve_ent':str, 'cve_mun':str})
+base_productores = pd.read_excel(root + '/datasets/productores_mun.xlsx', converters={'cve_ent':str, 'cve_mun':str})
 #base_productores2 = pd.read_excel(root + '/datasets/TotalProductores2.xlsx', converters={'cve_ent':str, 'cve_mun':str})
 #base_productores = pd.read_excel(root + '/datasets/TotalProductores3.xlsx', converters={'cve_ent':str, 'cve_mun':str})
 
