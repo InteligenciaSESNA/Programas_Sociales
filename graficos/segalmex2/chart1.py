@@ -421,10 +421,10 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
         # constructor
         # def __init__(self, background_style=bstyle):
         base_layer = [#dl.TileLayer(),
-                      dl.GestureHandling(),
+                      #dl.GestureHandling(),
                       #dl.EasyButton(icon="fa fa-home fa-fw", id="btn_nacional"),
                       # #html.Button("Zoom in", id="zoom_in"),
-                      dl.FullscreenControl(),
+                      #dl.FullScreenControl(),
                       base,
                       info,
                       ]

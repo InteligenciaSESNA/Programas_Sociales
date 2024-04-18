@@ -7,8 +7,10 @@ import dash_bootstrap_components as dbc
 # Para poder hacer uso de la librería con componentes de bootstrap, es muy necesario
 # utilizar una hoja de estilos que contenga las clases bootstrap. En este caso se utiliza el tema por default
 external_css = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-external_stylesheets = dbc.themes.PULSE #JOURNAL
-
+#external_stylesheets = dbc.themes.JOURNAL # PULSE
+#external_stylesheets = dbc.themes.SUPERHERO
+#external_stylesheets = dbc.themes.COSMO
+external_stylesheets = dbc.themes.PULSE
 # Se inicializa la app. 
 # Los  meta tags son necesarios para hacer que el layout sea responsivo, es decir, que se adapte a la vista en
 app = dash.Dash(__name__, external_stylesheets=[external_stylesheets],

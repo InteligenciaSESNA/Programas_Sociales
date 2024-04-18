@@ -145,9 +145,10 @@ Una vez instaladas todas las dependencias ejecutamos el paso siguiente para desp
 
 - [Thousands of icons, one unified framework.](https://icon-sets.iconify.design/ic/baseline-edit-location-alt/): Para descargar amplia gama de íconos, y
 - [dash-mantine-components](https://www.dash-mantine-components.com/): Componentes para el dashboard
-- [dash-bootstrap-components](https://dash-bootstrap-components.opensource.faculty.ai/): Componentes para el dashboard
-
-
+- [dash-bootstrap-components](https://dash-bootstrap-components.opensource.fa[culty.ai/): Componentes para el dashboard
+-[Community Components Index](https://community.plotly.com/t/community-components-index/60098) 
+- [Nice plots Vega-Altair](https://altair-viz.github.io/)
+- [Dash-extensions](https://www.dash-extensions.com/components/event_source)
 
 # Proceso para ingreso a servidor
 

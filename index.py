@@ -13,6 +13,10 @@ from dash.dependencies import Input, Output, State
 from app import app
 # se importan los archivos .py de la carpeta apps
 from apps.segalmex import segalmex
+#from apps.segalmex3 import segalmex3
+from apps.segalmex2 import segalmex2
+#from apps.prod_bienestar import prod_bienestar
+
 from apps import home
 
 # Se inicializa el componente dropdown que sirve para hacer el menu desplegable mostrado
@@ -20,14 +24,14 @@ from apps import home
 dropdown = dbc.DropdownMenu(
     children=[
         #dbc.DropdownMenuItem("Home", href="/home"),
-        dbc.DropdownMenuItem("SEGALMEX", href="/segalmex"),
-        # dbc.DropdownMenuItem("LICONSA", href="/page2"),
+        dbc.DropdownMenuItem("Precios de Garantía", href="/segalmex"),
+        dbc.DropdownMenuItem("Produción para el Bienestar", href="/segalmex2")
         # dbc.DropdownMenuItem("DICONSA", href="/page3"),
     ],
     nav = True,
     in_navbar = True,
     label = "Menú",
-    style={'fontSize':'18px', 'padding':'0rem'}
+    style={'fontSize':'14px', 'padding':'0rem'}
 )
 
 # Se inicializa barra de navegación
@@ -45,23 +49,23 @@ navbar = dbc.Navbar(
                         dmc.Text("Secretaría Ejecutiva del Sistema Nacional Anticorrupción", size=20, color='white'),
                             
                         # en el href se marca a donde dirige cuando se da click en estas partes
-                        # href="/home",
-                        href="/segalmex",
+                        href="/home",
+                        #href="/segalmex",
                         style={"textDecoration": "none"},
                     ),  
-                ], className='col-9', style={'paddingLeft':'1rem','paddingBottom':'1rem', 'text-align':'left'}),
-                # dbc.Col([
-                #     dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
-                #     # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
-                #     dbc.Collapse(
-                #         dbc.Nav(
-                #             [dropdown], navbar=True
-                #         ),
-                #         id="navbar-collapse",
-                #         is_open=False,
-                #         navbar=True,
-                #     ),  
-                # ], className='col-1', align="right", style={'paddingRight':'1rem'}),
+                ], className='col-8', style={'paddingLeft':'1rem','paddingBottom':'1rem', 'text-align':'left'}),
+                dbc.Col([
+                    dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
+                    # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
+                    dbc.Collapse(
+                        dbc.Nav(
+                            [dropdown], navbar=True
+                        ),
+                        id="navbar-collapse",
+                        is_open=False,
+                        navbar=True,
+                    ),  
+                ], className='col-1', align="right", style={'paddingRight':'0rem'}),
             ], className='col-12'),
             
         ], style={'height':'5rem'}
@@ -109,8 +113,8 @@ app.layout = html.Div([
                         dmc.Text("Secretaría Ejecutiva del Sistema Nacional Anticorrupción", size=20, color='white'),
                             
                         # en el href se marca a donde dirige cuando se da click en estas partes
-                        #href="/home",
-                        href="/segalmex",
+                        href="/home",
+                        #href="/segalmex",
                         style={"textDecoration": "none"},
                     ),  
                 ], className='col-8', style={'paddingLeft':'0rem', 'text-align':'left'}),
@@ -137,14 +141,13 @@ def display_page(pathname):
 
     if pathname == '/segalmex':
         return segalmex.layout
-    elif pathname == '/segalmex':
-        return segalmex.layout
-    elif pathname == '/segalmex':
-        return segalmex.layout
+    elif pathname == '/segalmex2':
+        return segalmex2.layout
+    
 
     else:
-        #return home.layout
-        return segalmex.layout
+        return home.layout
+        #return segalmex.layout
 
 #HOST = '10.14.10.145'
 #PORT = 8000
