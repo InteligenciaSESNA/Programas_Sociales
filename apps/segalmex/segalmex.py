@@ -1959,7 +1959,7 @@ capa_base = dl.Pane(dl.GeoJSON(data=data2,  # url to geojson file
                         zoomToBoundsOnClick=False,  # when true, zooms to bounds of feature (e.g. polygon) on click
                         hideout=dict(colorscale=colorscale, classes=classes, style=style2, colorProp=2), #2e4053
                         hoverStyle=arrow_function(dict(weight=4, fillColor='#000066', color='#000066',opacity=0.1, fillOpacity=1, dashArray='1')),  # style applied on hover
-                        id='states'), style={'zIndex':0}) 
+                        id='states'), name='escenario', style={'zIndex':0}) 
     
 ######### Mapa criterios simulados   ################
 ##   CALLBACK : MAPA

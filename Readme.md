@@ -112,7 +112,8 @@ Cuando se va a ejecutar por primera vez, es necesario instalar las siguintes dep
     conda install -c conda-forge matplotlib
     conda install -c conda-forge seaborn
     conda install -c conda-forge dash-bootstrap-components
-    conda install -c conda-forge dash-leaflet
+    conda install -c conda-forge dash-leaflet==1.0.15
+    conda install -c conda-forge protobuf==3.20.0
     conda install -c conda-forge sqlalchemy 
     conda install -c conda-forge datetime 
     conda install -c conda-forge pymysql
