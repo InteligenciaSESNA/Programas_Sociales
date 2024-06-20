@@ -21,13 +21,14 @@ from apps import home
 list_ramos = ['precios_garantia', 'produccion_bienestar']
 # change to app.layout if running as single page app instead
 layout = dbc.Container([
+
     # word cloud
     dmc.Center(
         dbc.Row([
             html.Iframe(id='cloud', srcDoc=open(root + "/apps/cloud.html", 'r', encoding = 'utf-8').read(), style={"height": "480px", "width": "1400px", 'paddingTop':'2rem'}),
         ], style={"height": "480px", "width": "1400px", 'paddingTop':'3rem', 'marginBottom':'4rem'}),
     ),
-    
+
     # Logotimo SESNA
     html.Center(
         html.Div(children=[
@@ -35,11 +36,11 @@ layout = dbc.Container([
         ], style={"width": '15%',  "height":'15%', 'marginTop':'0rem', 'paddingTop':'4rem'},
         ),
     ),
-    # texto 
+    # texto
     html.Div([
         dmc.Text("Programas sociales", color='white', weight=500, align='center', style={"fontSize": 50}),
     ], style={"text-aling":"center", "marginBottom":'2rem'}),
-    
+
 
     ######    SECCIÓN : SELECTORES
     html.Center(
@@ -47,70 +48,95 @@ layout = dbc.Container([
             html.Div([
                 dbc.Row(
                     dmc.Text("Ramo", color='black', weight=500, align='left', style={"fontSize": 20}),
-                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingTop':'1rem',  'paddingLeft':'1rem', 'paddingRight':'1rem'}), 
+                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingTop':'1rem',  'paddingLeft':'1rem', 'paddingRight':'1rem'}),
                 dbc.Row(
                         dmc.Select(
-                            id='ramos', 
+                            id='ramos',
                             data=list_ramos,
                             value= "uno",
                             clearable=True,
-                            #style={"width": 600}  
-                            ),       
+                            #style={"width": 600}
+                            ),
                 className="col-lg-10 col-md-10 col-12", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}
-                ),   
-                dbc.Row(    
+                ),
+                dbc.Row(
                         dmc.Text("Organismo", color='black', weight=500, align='left', style={"fontSize": 20}),
-                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}), 
+                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}),
                 dbc.Row(
                         dmc.Select(
-                            id='organismos', 
+                            id='organismos',
                             data=list_ramos,
                             value= "uno",
                             clearable=True,
-                            #style={"width": 600}  
-                            ),       
+                            #style={"width": 600}
+                            ),
                 className="col-lg-10 col-md-10 col-12", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}
-                ),   
+                ),
 
                 dbc.Row(
                         dmc.Text("Programa social", color='black', weight=500, align='left', style={"fontSize": 20, 'paddingLeft':'1rem', 'paddingRight':'1rem'}),
-                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}), 
+                className="col-lg-10 col-md-10 col-12 mt-4", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}),
                 dbc.Row(
                         dmc.Select(
-                            id='progama_social', 
-                            data=list_ramos,
-                            value= "precios_garantia",
+                            id='selector_programa',
+                            data=[
+                                {'label': 'Programa de Precios de garantía', 'value': '/precios_garantia'},
+                                {'label': 'Programa de Producción para el Bienestar', 'value': '/produccion_bienestar'},
+                            ],
+                            searchable=True,
                             clearable=True,
-                            #style={"width": 600}  
-                            ),       
+                            placeholder="Seleccione una opción",
+                            #style={"width": 600}
+                            ),
                 className="col-lg-10 col-md-10 col-12", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}
-                ),   
-                #        
-                dbc.Row( 
+                ),
+                #
+                dbc.Row(
                     dmc.Button(
                         'Ir',
-                        id = 'submit-button',
+                        id = 'home_submit-button',
                         n_clicks=0,
                         color = 'dark',
-                        fullWidth=True), 
+                        fullWidth=True),
                 className="col-lg-6 col-md-6 col-6", style={'marginTop':'4rem','paddingLeft':'1rem', 'paddingRight':'1rem'}
-                ),  
-            ], style={'marginLeft':'1rem', 'marginTop':'1rem'}),  
+                ),
+            ], style={'marginLeft':'1rem', 'marginTop':'1rem'}),
         ], className="card col-lg-5 col-md-6 col-10 justify-content-center", style={'backgroundColor':'#F4F6F6', 'paddingBottom':'2rem', 'boxShadow': '#e3e3e3 1px 1px 1px', 'border-radius': '5px'}),
     style={'paddingBottom':'6rem', 'paddingTop':'2rem'}),
 ], className="twelve columns", style={'backgroundColor': '#212F3C'},
-fluid=True, 
+fluid=True,
 )
 
 
 # Callbacks
-@app.callback(Output('home_page-content', 'children'),
-              [Input('progama_social', 'value')])
-def display_page(programa):
-
-    if programa == 'precios_garantia':
-        return precios_garantia.layout
-    elif programa == 'produccion_bienestar':
-        return produccion_bienestar.layout
+@app.callback(
+    Output('url', 'pathname'),
+    Input('home_submit-button', 'n_clicks'),
+    State('selector_programa', 'value'),
+    prevent_initial_call=True,
+)
+def redirect_page(click, selected_page):
+    if selected_page:
+        # Concatenar las rutas seleccionadas
+        return selected_page
     else:
+        return '/'
+    
+
+
+@app.callback(Output('page-content2', 'children'),
+              #Input('home_submit-button', 'n_clicks'),
+              Input('url', 'pathname'))
+def display_page(pathname):
+    if pathname == '/precios_garantia':
+        return precios_garantia.layout
+    elif pathname == '/produccion_bienestar':
+        return produccion_bienestar.layout
+    else: 
         return home.layout
+    # if programa == 'precios_garantia':
+    #     return precios_garantia.layout
+    # elif programa == 'produccion_bienestar':
+    #     return produccion_bienestar.layout
+    # else:
+    #     return home.layout

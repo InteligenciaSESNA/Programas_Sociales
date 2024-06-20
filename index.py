@@ -15,6 +15,7 @@ from app import app
 from apps.precios_garantia import precios_garantia
 #from apps.segalmex3 import segalmex3
 from apps.produccion_bienestar import produccion_bienestar
+#from apps.programa_fertilizantes import programa_fertilizantes
 #from apps.prod_bienestar import prod_bienestar
 
 from apps import home
@@ -25,7 +26,8 @@ dropdown = dbc.DropdownMenu(
     children=[
         #dbc.DropdownMenuItem("Home", href="/home"),
         dbc.DropdownMenuItem("Precios de Garantía", href="/precios_garantia"),
-        dbc.DropdownMenuItem("Produción para el Bienestar", href="/produccion_bienestar")
+        dbc.DropdownMenuItem("Produción para el Bienestar", href="/produccion_bienestar"),
+        #dbc.DropdownMenuItem("Programa de Fertilizantes", href="/programa_fertilizantes")
         # dbc.DropdownMenuItem("DICONSA", href="/page3"),
     ],
     nav = True,
@@ -57,14 +59,14 @@ navbar = dbc.Navbar(
                 dbc.Col([
                     dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
                     # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
-                    dbc.Collapse(
-                        dbc.Nav(
-                            [dropdown], navbar=True
-                        ),
-                        id="navbar-collapse",
-                        is_open=False,
-                        navbar=True,
-                    ),  
+                    # dbc.Collapse(
+                    #     dbc.Nav(
+                    #         [dropdown], navbar=True
+                    #     ),
+                    #     id="navbar-collapse",
+                    #     is_open=False,
+                    #     navbar=True,
+                    # ),  
                 ], className='col-1', align="right", style={'paddingRight':'0rem'}),
             ], className='col-12'),
             
@@ -96,7 +98,8 @@ app.layout = html.Div([
     navbar,
     # Se define un div con un id determinado que es el que contiene el contenido de la página y es
     # el que va cambiando conforme se va cambiando el valor de la url. 
-    html.Div(id='page-content'),
+    #html.Div(id='page-content'),
+    html.Div(id='page-content2'),
     # footer 
     html.Footer([
         html.Br(),
@@ -135,19 +138,18 @@ app.layout = html.Div([
 
 # A continuación se define como cambia la página según las rutas, cada sección está escrita en su propio
 # archivo
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
+# @app.callback(Output('page-content', 'children'),
+#               [Input('url', 'pathname')])
+# def display_page(pathname):
 
-    if pathname == '/precios_garantia':
-        return precios_garantia.layout
-    elif pathname == '/produccion_bienestar':
-        return produccion_bienestar.layout
-    
-
-    else:
-        return home.layout
-        #return segalmex.layout
+#     if pathname == '/precios_garantia':
+#         return precios_garantia.layout
+#     elif pathname == '/produccion_bienestar':
+#         return produccion_bienestar.layout
+#     # elif pathname == '/programa_fertilizantes':
+#     #     return programa_fertilizantes.layout
+#     else:
+#         return home.layout
 
 #HOST = '10.14.10.145'
 #PORT = 8000
