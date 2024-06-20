@@ -143,7 +143,7 @@ Una vez instaladas todas las dependencias ejecutamos el paso siguiente para desp
      En el ejemplo anterior, la carpeta que contiene 
 
 # Fuentes de consulta
-
+- [Remueve bag de imagenes](https://www.remove.bg/es/upload)
 - [Thousands of icons, one unified framework.](https://icon-sets.iconify.design/ic/baseline-edit-location-alt/): Para descargar amplia gama de íconos, y
 - [dash-mantine-components](https://www.dash-mantine-components.com/): Componentes para el dashboard
 - [dash-bootstrap-components](https://dash-bootstrap-components.opensource.fa[culty.ai/): Componentes para el dashboard

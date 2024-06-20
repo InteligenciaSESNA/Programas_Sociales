@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  programassociales:
-    image: programassociales
-    build:
-      context: .
-      dockerfile: ./Dockerfile

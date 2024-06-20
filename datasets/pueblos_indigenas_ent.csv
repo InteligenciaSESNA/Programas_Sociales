@@ -1,0 +1,30 @@
+"cve_ent","entidad","tipo","num_tipo"
+"04","Campeche","A",1
+"04","Campeche","B",4
+"07","Chiapas","A",32
+"07","Chiapas","B",13
+"08","Chihuahua","B",5
+"10","Durango","A",1
+"12","Guerrero","A",17
+"12","Guerrero","B",6
+"13","Hidalgo","B",12
+"13","Hidalgo","A",11
+"14","Jalisco","B",1
+"14","Jalisco","A",1
+"15","México","B",2
+"16","Michoacán de Ocampo","B",8
+"18","Nayarit","A",1
+"18","Nayarit","B",1
+"20","Oaxaca","A",237
+"20","Oaxaca","B",56
+"21","Puebla","B",15
+"21","Puebla","A",43
+"22","Querétaro","B",1
+"23","Quintana Roo","A",3
+"23","Quintana Roo","B",2
+"24","San Luis Potosí","A",9
+"24","San Luis Potosí","B",5
+"30","Veracruz de Ignacio de la Llave","A",34
+"30","Veracruz de Ignacio de la Llave","B",12
+"31","Yucatán","A",67
+"31","Yucatán","B",23

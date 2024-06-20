@@ -12,9 +12,9 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from app import app
 # se importan los archivos .py de la carpeta apps
-from apps.segalmex import segalmex
+from apps.precios_garantia import precios_garantia
 #from apps.segalmex3 import segalmex3
-from apps.segalmex2 import segalmex2
+from apps.produccion_bienestar import produccion_bienestar
 #from apps.prod_bienestar import prod_bienestar
 
 from apps import home
@@ -24,8 +24,8 @@ from apps import home
 dropdown = dbc.DropdownMenu(
     children=[
         #dbc.DropdownMenuItem("Home", href="/home"),
-        dbc.DropdownMenuItem("Precios de Garantía", href="/segalmex"),
-        dbc.DropdownMenuItem("Produción para el Bienestar", href="/segalmex2")
+        dbc.DropdownMenuItem("Precios de Garantía", href="/precios_garantia"),
+        dbc.DropdownMenuItem("Produción para el Bienestar", href="/produccion_bienestar")
         # dbc.DropdownMenuItem("DICONSA", href="/page3"),
     ],
     nav = True,
@@ -139,10 +139,10 @@ app.layout = html.Div([
               [Input('url', 'pathname')])
 def display_page(pathname):
 
-    if pathname == '/segalmex':
-        return segalmex.layout
-    elif pathname == '/segalmex2':
-        return segalmex2.layout
+    if pathname == '/precios_garantia':
+        return precios_garantia.layout
+    elif pathname == '/produccion_bienestar':
+        return produccion_bienestar.layout
     
 
     else:

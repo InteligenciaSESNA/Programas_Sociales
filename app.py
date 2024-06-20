@@ -19,7 +19,8 @@ app = dash.Dash(__name__, external_stylesheets=[external_stylesheets],
 
 # authenticación
 VALID_USERNAME_PASSWORD_PAIRS = {
-    'sesna': 'dgria'
+    'sesna': 'dgria',
+
 }
 
 auth = dash_auth.BasicAuth(
