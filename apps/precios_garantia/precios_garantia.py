@@ -724,7 +724,7 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     capas = []
     capas.extend([
                 info,
-                dl.FullscreenControl(title='Full Screen'),
+                #dl.FullscreenControl(title='Full Screen'),
                 capa_base,
                 beneficiarios,
                 productores

@@ -223,7 +223,7 @@ def mapa1(clicks, benef_sel, transfer_sel, producto_sel, anio_sel, capas_sel, pr
         # def __init__(self, background_style=bstyle):
         base_layer = [#dl.TileLayer(),
                       dl.GestureHandling(),
-                      dl.FullscreenControl(title='Full Screen'),
+                      #dl.FullscreenControl(title='Full Screen'),
                       base,
                       info,
                       ]

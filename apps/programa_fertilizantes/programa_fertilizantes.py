@@ -723,7 +723,7 @@ def actualizar_mapa2(clicks, criterios_sel, producto_sel, anio_sel):
     capas = []
     # se agregan capas
     capas.extend([
-                dl.FullscreenControl(),
+                #dl.FullscreenControl(),
                 info,
                 capa_base,
                 beneficiarios,
