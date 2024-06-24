@@ -52,8 +52,9 @@ layout = dbc.Container([
                 dbc.Row(
                         dmc.Select(
                             id='ramos',
-                            data=list_ramos,
-                            value= "uno",
+                            data=[],
+                            placeholder="Seleccione un ramo",
+                            value= "",
                             clearable=True,
                             #style={"width": 600}
                             ),
@@ -65,8 +66,9 @@ layout = dbc.Container([
                 dbc.Row(
                         dmc.Select(
                             id='organismos',
-                            data=list_ramos,
-                            value= "uno",
+                            placeholder="Seleccione un organismo",
+                            data=[],
+                            value= "",
                             clearable=True,
                             #style={"width": 600}
                             ),
@@ -85,7 +87,7 @@ layout = dbc.Container([
                             ],
                             searchable=True,
                             clearable=True,
-                            placeholder="Seleccione una opción",
+                            placeholder="Seleccione un programa social",
                             #style={"width": 600}
                             ),
                 className="col-lg-10 col-md-10 col-12", style={'paddingLeft':'1rem', 'paddingRight':'1rem'}

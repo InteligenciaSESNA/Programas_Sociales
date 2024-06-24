@@ -3,8 +3,9 @@
 # 📁 **Proyecto : Visualizador Programas Sociales**
 
 
-#![Mapa](./mapa_image.png)
-![Mapa](./mapa_image2.gif)
+<img src="./home01.png" alt="Description" width="400" height="300">
+
+![Mapa](./mapa_image.png)
 
 # Ejecución del proyecto
 

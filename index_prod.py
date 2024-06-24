@@ -12,7 +12,12 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 from app import app
 # se importan los archivos .py de la carpeta apps
-from apps.segalmex import segalmex
+from apps.precios_garantia import precios_garantia
+#from apps.segalmex3 import segalmex3
+from apps.produccion_bienestar import produccion_bienestar
+#from apps.programa_fertilizantes import programa_fertilizantes
+#from apps.prod_bienestar import prod_bienestar
+
 from apps import home
 
 # Se inicializa el componente dropdown que sirve para hacer el menu desplegable mostrado
@@ -20,14 +25,15 @@ from apps import home
 dropdown = dbc.DropdownMenu(
     children=[
         #dbc.DropdownMenuItem("Home", href="/home"),
-        dbc.DropdownMenuItem("SEGALMEX", href="/segalmex"),
-        # dbc.DropdownMenuItem("LICONSA", href="/page2"),
+        dbc.DropdownMenuItem("Precios de Garantía", href="/precios_garantia"),
+        dbc.DropdownMenuItem("Produción para el Bienestar", href="/produccion_bienestar"),
+        #dbc.DropdownMenuItem("Programa de Fertilizantes", href="/programa_fertilizantes")
         # dbc.DropdownMenuItem("DICONSA", href="/page3"),
     ],
     nav = True,
     in_navbar = True,
     label = "Menú",
-    style={'fontSize':'18px', 'padding':'0rem'}
+    style={'fontSize':'14px', 'padding':'0rem'}
 )
 
 # Se inicializa barra de navegación
@@ -37,7 +43,7 @@ navbar = dbc.Navbar(
             dbc.Row([
                 dbc.Col(
                     html.Img(src="assets/Logotipo_blanco.png", height="40px"), 
-                className='col-2', style={'paddingRight':'2rem', 'text-align':'right'}),
+                className='col-3', style={'paddingRight':'2rem', 'text-align':'right'}),
                
                 dbc.Col([
                     html.A(
@@ -45,23 +51,23 @@ navbar = dbc.Navbar(
                         dmc.Text("Secretaría Ejecutiva del Sistema Nacional Anticorrupción", size=20, color='white'),
                             
                         # en el href se marca a donde dirige cuando se da click en estas partes
-                        # href="/home",
-                        href="/segalmex",
+                        href="/home",
+                        #href="/segalmex",
                         style={"textDecoration": "none"},
                     ),  
-                ], className='col-9', style={'paddingLeft':'1rem','paddingBottom':'1rem', 'text-align':'left'}),
+                ], className='col-8', style={'paddingLeft':'1rem','paddingBottom':'1rem', 'text-align':'left'}),
                 dbc.Col([
                     dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
                     # Aquí se incluhe el componente dropdown que ya se había hecho con anterioridad
-                    dbc.Collapse(
-                        dbc.Nav(
-                            [dropdown], navbar=True
-                        ),
-                        id="navbar-collapse",
-                        is_open=False,
-                        navbar=True,
-                    ),  
-                ], className='col-1', align="right", style={'paddingRight':'1rem'}),
+                    # dbc.Collapse(
+                    #     dbc.Nav(
+                    #         [dropdown], navbar=True
+                    #     ),
+                    #     id="navbar-collapse",
+                    #     is_open=False,
+                    #     navbar=True,
+                    # ),  
+                ], className='col-1', align="right", style={'paddingRight':'0rem'}),
             ], className='col-12'),
             
         ], style={'height':'5rem'}
@@ -92,7 +98,8 @@ app.layout = html.Div([
     navbar,
     # Se define un div con un id determinado que es el que contiene el contenido de la página y es
     # el que va cambiando conforme se va cambiando el valor de la url. 
-    html.Div(id='page-content'),
+    #html.Div(id='page-content'),
+    html.Div(id='page-content2'),
     # footer 
     html.Footer([
         html.Br(),
@@ -109,8 +116,8 @@ app.layout = html.Div([
                         dmc.Text("Secretaría Ejecutiva del Sistema Nacional Anticorrupción", size=20, color='white'),
                             
                         # en el href se marca a donde dirige cuando se da click en estas partes
-                        #href="/home",
-                        href="/segalmex",
+                        href="/home",
+                        #href="/segalmex",
                         style={"textDecoration": "none"},
                     ),  
                 ], className='col-8', style={'paddingLeft':'0rem', 'text-align':'left'}),
@@ -127,24 +134,6 @@ app.layout = html.Div([
     ], className="col-12", style={'color':'white', 'backgroundColor':'#566573'}), #566573
 
 ])
-
-
-# A continuación se define como cambia la página según las rutas, cada sección está escrita en su propio
-# archivo
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
-def display_page(pathname):
-
-    if pathname == '/segalmex':
-        return segalmex.layout
-    elif pathname == '/segalmex':
-        return segalmex.layout
-    elif pathname == '/segalmex':
-        return segalmex.layout
-
-    else:
-        #return home.layout
-        return segalmex.layout
 
 HOST = '0.0.0.0'
 PORT = 8050
