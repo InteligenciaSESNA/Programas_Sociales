@@ -180,6 +180,175 @@ list_criterios = ['Marginación', 'Precio']
     - seccion6 : Contiene el mapa 
 """
 # original 'backgroundColor': '#f2f2f2'
+
+#######################################################################################################
+############################################# seccion8  ###############################################
+#######################################################################################################
+seccion8 = html.Div([
+   
+    dbc.Row([
+       
+        dmc.Card([
+            dmc.CardSection([
+                    dmc.SimpleGrid(cols=2, children=[
+                        dcc.Graph(id='barplot'),
+                        dcc.Graph(id='distplot'),
+                    ]),
+            ],
+            inheritPadding=True,
+            mt="sm",
+            pb="md",
+            ),
+        ],
+        withBorder=True,
+        shadow="sm",
+        radius="md",
+        #style={"width": 350}
+        ),
+       
+    ]),
+   
+])
+ 
+@app.callback(# 'click_feature
+        Output('barplot', 'figure'),
+        Input('submit-button', 'n_clicks'),
+        Input('states', 'click_feature'),
+        State('producto', 'value'),
+        State('anio', 'value'),
+    )
+def barplot2(click, feature, producto_sel, anio_sel):
+   
+    # filtros
+    # anio = anio_sel
+    df_filt = base_beneficiarios_mun_tprod.copy()
+    if feature is None:
+        df_filt = df_filt[df_filt['year']==int(anio_sel)]
+        df_filt = df_filt[df_filt['cultivo']==producto_sel]
+        #df_filt = df_filt[df_filt['entidad']==entidad]
+        df_filt = df_filt.groupby('entidad').agg({'monto_total':'sum'}).reset_index()
+        df_filt = df_filt.sort_values('monto_total',ascending=False)
+       
+        x = df_filt['entidad']
+        y = df_filt['monto_total']
+       
+    else:
+        # producto = producto_sel
+        entidad = feature["properties"]["name"]
+        df_filt = df_filt[df_filt['year']==int(anio_sel)]
+        df_filt = df_filt[df_filt['cultivo']==producto_sel]
+        df_filt = df_filt[df_filt['entidad']==entidad]
+        df_filt = df_filt.sort_values('monto_total',ascending=False)
+        x = df_filt['municipio']
+        y = df_filt['monto_total']
+        # if click is None:
+        #     # Return an empty figure if no click has been made
+        #     return go.Figure()
+        # filtramos
+       
+        #print(df_filt.head())
+       
+    # gráfico
+    fig = go.Figure()
+ 
+    fig.add_traces(go.Bar(x=x,
+                        y=y))
+ 
+    fig.update_layout(
+            showlegend=False,
+            autosize=True,
+            #width=650,
+            height=400,
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=60,
+                pad=0),
+                plot_bgcolor='white',
+                paper_bgcolor="white",
+                )
+ 
+ 
+    fig.update_layout(
+            title="Monto de apoyos por producto",
+            xaxis_title="Entidad",
+            yaxis_title="Monto del Apoyo ($)",
+            legend_title="",
+            font=dict(
+                #family="Courier New, monospace",
+                size=12,
+                color="#2a3240"
+                ))
+   
+    return fig
+ 
+ 
+@app.callback(# 'click_feature
+        Output('distplot', 'figure'),
+        Input('submit-button', 'n_clicks'),
+        Input('states', 'click_feature'),
+        State('producto', 'value'),
+        State('anio', 'value'),
+    )
+def barplot3(click, feature, producto_sel, anio_sel):
+   
+    # filtros
+    # anio = anio_sel
+    # producto = producto_sel
+    entidad = feature["properties"]["name"]
+    if click is None:
+        # Return an empty figure if no click has been made
+        return go.Figure()
+    # filtramos
+    df_filt = base_beneficiarios_mun_tprod.copy()
+    #print(df_filt.head())
+    df_filt = df_filt[df_filt['year']==int(anio_sel)]
+    df_filt = df_filt[df_filt['cultivo']==producto_sel]
+    df_filt = df_filt[df_filt['entidad']==entidad]
+    df_filt = df_filt.sort_values('monto_total',ascending=False)
+   
+ 
+    # gráfico
+    fig = go.Figure()
+ 
+    fig.add_traces(go.Violin(x=df_filt['municipio'].to_list(),
+                             y=df_filt['monto_total'].to_list()))
+ 
+    fig.update_layout(
+            showlegend=False,
+            autosize=True,
+            #width=650,
+            height=400,
+            margin=dict(
+                l=0,
+                r=0,
+                b=0,
+                t=60,
+                pad=0),
+                plot_bgcolor='white',
+                paper_bgcolor="white",
+                )
+ 
+ 
+    fig.update_layout(
+            title="Monto de apoyos por producto",
+            xaxis_title="Entidad",
+            yaxis_title="Monto del Apoyo ($)",
+            legend_title="",
+            font=dict(
+                #family="Courier New, monospace",
+                size=12,
+                color="#2a3240"
+                ))
+   
+    return fig
+
+
+###############################################################################################################
+###############################################################################################################
+###############################################################################################################
+
 ########################### layout  SEGALMEX
 layout = dbc.Container([
     
@@ -195,7 +364,11 @@ layout = dbc.Container([
             seccion4,
             # Mapa
             seccion6,
+            # gráficos
+            seccion8,
             # final break
+            
+
             dbc.Row([
                 dbc.Col([
                     html.Br(),
@@ -206,6 +379,8 @@ layout = dbc.Container([
     ], className="twelve columns", style={'backgroundColor': 'white', 'marginTop': '0rem', 'padding':'0rem'},
     fluid=True
     )
+
+
     # #EBF5FB
     # #F4F6F6
 #########################################################################################

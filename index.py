@@ -81,6 +81,7 @@ navbar = dbc.Navbar(
 
 # El siguiente callback sirve para cambiar entre la hamburguesa y la versión extendida
 # del menú según el tamaño de la pantalla. 
+
 @app.callback(
     Output("navbar-collapse", "is_open"),
     [Input("navbar-toggler", "n_clicks")],

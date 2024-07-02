@@ -39,13 +39,16 @@ import pymysql
 from apps.precios_garantia import reglas_operacion
 
 
+# las siguiente listas son los años y productos que tenemos disponibles, en caso de que haya
+# otro solo se agrega en las listas.
+
 list_year = ['2019','2020','2021','2022']
 list_products = ['Arroz', 'Frijol', 'Leche', 'Maíz', 'Trigo']
 
 
 
 #########################################################################################
-#                              Filtros principales
+#                              Filtros principales                                      #
 #########################################################################################
 
 """
@@ -66,9 +69,9 @@ seccion4 = html.Div([
     dbc.Row([
         # Primera columna : Vacia
         dbc.Col([
-            dmc.Button(
+            dmc.Button(   # Esta sección agrega un botón llamado "Instrucciones" el cual te da descripciones de algunas funcionalidades importantes del mapa
                     "Instrucciones: ",
-                    id="transition-instrucciones-btn",
+                    id="transition-instrucciones-btn",  # id del boton
                     variant="subtle",
                     leftIcon=DashIconify(icon="line-md:list"),
                     color="white",
@@ -110,7 +113,7 @@ seccion4 = html.Div([
                     dmc.Select(
                         icon=DashIconify(icon="material-symbols:filter-list-rounded"),
                         label=
-                        dmc.Tooltip(
+                        dmc.Tooltip(   # Esta seccion de Tootlip es para los pequeños nombre que aparecen un poco arriba de los filtros
                             multiline=True,
                             width=200,
                             withArrow=True,
@@ -120,14 +123,15 @@ seccion4 = html.Div([
                             label="Seleccione un año fiscal",
                             children=["Seleccione el año"],
                             ),
-                        id="anio",
+                        id="anio",   # Aqui se coloca el id del filtro que en este caso es el año, que se va a seleccionar
                         data=list_year,
-                        value='2020',
+                        value='2020', # Este año lo va a mostrar por default
                         searchable=True,
                         nothingFound="No options found",
                         style={"textAlign": "Left"}
                     ),
                 ]),
+                # Esta columna es para el filtro de selccionar el producto, sigue la misma lógica con el botón de año
                 dbc.Col([
                     dmc.Select(
                         icon=DashIconify(icon="material-symbols:filter-list-rounded"),
@@ -152,13 +156,14 @@ seccion4 = html.Div([
                 ]),
             ], style={'marginBottom':'3rem','paddingBottom':'2rem', 'paddingRight':'1rem', 'paddingLeft':'1rem'}),
             
+            # Esta pequeña seccion es para poder definir el botón de "actualizar" esto para refrescar los datos por filtros seleccionados
             dbc.Col([
                 html.Center(
                     dbc.Row([
                         dbc.Col([
                             dmc.Button(
                                 'Actualizar',
-                                id='submit-button',
+                                id='submit-button',   # Id del bóton actualizar
                                 n_clicks=0,
                                 #children='Actualizar',
                                 color = 'dark'
@@ -168,8 +173,9 @@ seccion4 = html.Div([
                 ),
             ]),
         ], className='col-xl-4 col-12',  style={'marginBottom':'4rem', 'paddingTop':'5rem'}),
-        # Tercera columna : Selector Producto
-        
+
+        # Para la descarga de un resumen ejecutivo, ### pero no funciona, por ahora ###
+
         dbc.Col([
             dmc.Center(
                 dbc.Row([
@@ -197,7 +203,7 @@ seccion4 = html.Div([
             
         ], className='col-xl-4 col-12', style={'marginBottom':'0rem'}),
         
-        #  
+        ######### La siguiente parte es para agregar las reglas de operación para cada año y producto ###########
         dmc.Center(
         dmc.Group([   
             html.Div([
@@ -238,6 +244,9 @@ seccion4 = html.Div([
                         is_open=False
                     ),
             ]),
+
+            # Esta sección es para agregar el botón de descarga de los datos, ##pero este no funciona por ahora##
+
             dmc.Divider(orientation="vertical", style={"height": 30}),
             html.Div([
                 #dmc.Anchor(
